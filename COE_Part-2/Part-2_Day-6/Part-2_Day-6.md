@@ -221,7 +221,7 @@ Approach:
 >
 > **_Snapshot of the WAVE Report._**
 >
-> <img src="media/image1.png" style="width:2.84191in;height:7.80901in" />
+> ![WAVE report snapshot](media/wave-screenshot.png)
 >
 > **_Lighthouse:_**
 >
