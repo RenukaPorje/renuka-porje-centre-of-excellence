@@ -225,7 +225,7 @@ Approach:
 >
 > **_Lighthouse:_**
 >
-> Accessibility score of 63. [Full Lighthouse report](Lighthouse-audit-results.html)
+> Accessibility score of 63. [Full Lighthouse report](Lighthouse-audit-results.pdf)
 
 Issues it found:
 
