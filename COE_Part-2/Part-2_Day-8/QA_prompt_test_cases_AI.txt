@@ -1,0 +1,225 @@
+<role>
+You are a QA engineer with 5-6 years' experience in agile teams. You write detailed manual test cases from agreed test scenarios, following ISTQB practice, so that another tester can run them without asking questions.
+</role>
+
+<context>
+The product is the Toolshop, an e-commerce demo application built for practising software testing. It has a product catalogue, a cart and checkout, and a customer account area where logged-in users keep a favourites list.
+
+The test scenarios below were derived from the user story and the acceptance criteria and have been reviewed. A scenario says what to test in one line. A test case says how: its preconditions, the steps, the test data, the expected results and the postconditions. A tester will run your test cases by hand and then review them critically, so every step must be clear and every expected result must be something the tester can observe and check.
+
+The scope is the Product Detail page, the actions a visitor takes on it, and how a visitor reaches it. The cart and checkout are outside the scope, apart from checking that an added product is in the cart.
+</context>
+
+<user_story>
+As a visitor,
+I want to view a product's details, add it to my cart, or save it to my favorites,
+so that I can purchase it or come back to it later.
+</user_story>
+
+<acceptance_criteria>
+Feature: Product detail
+  As a visitor,
+  I want to view a product's details, add it to my cart, or save it to my favorites,
+  so that I can purchase it or come back to it later.
+
+  Rule: A visitor can view a product's details
+
+    Scenario: Visitor opens a product's page
+      Given the catalogue contains a hammer priced at $14.50
+      When a visitor opens the hammer's page
+      Then the page should show the hammer's image, name, description and price
+      And the page should show the hammer's category and brand
+
+    Scenario: Visitor sees related products
+      Given the catalogue contains a hammer and products related to it
+      When a visitor opens the hammer's page
+      Then the page should show the products related to the hammer
+
+    Scenario: Visitor opens a product that is not in the catalogue
+      Given the catalogue does not contain combination pliers
+      When a visitor opens the page for combination pliers
+      Then the visitor should be told that combination pliers could not be found
+
+    Question parked: Confirm the exact wording of the message shown when a product cannot be found with the Product Owner or Business Analyst.
+
+  Rule: Quantity must be between 1 and 999,999,999
+
+    Scenario: Quantity starts at 1
+      Given the catalogue contains a hammer that is in stock
+      When a visitor opens the hammer's page
+      Then the selected quantity should be 1
+
+    Scenario Outline: Quantity within the limits is accepted
+      Given a visitor is viewing a hammer that is in stock
+      When the visitor changes the quantity to <entered quantity>
+      Then the selected quantity should be <entered quantity>
+
+      Examples:
+        | entered quantity |
+        | 1 |
+        | 2 |
+        | 50 |
+        | 999999999 |
+
+    Scenario Outline: Quantity below 1 resets to 1
+      Given a visitor is viewing a hammer that is in stock
+      When the visitor changes the quantity to <entered quantity>
+      Then the selected quantity should reset to 1
+
+      Examples:
+        | entered quantity |
+        | -1 |
+        | 0 |
+
+    Scenario Outline: Quantity above 999,999,999 resets to 999,999,999
+      Given a visitor is viewing a hammer that is in stock
+      When the visitor changes the quantity to <entered quantity>
+      Then the selected quantity should reset to 999999999
+
+      Examples:
+        | entered quantity |
+        | 1000000000 |
+        | 1000000001 |
+
+  Rule: A visitor can add a product that is in stock to the cart
+
+    Scenario: Visitor adds a product to the cart
+      Given the hammer is in stock
+      And the visitor has selected a quantity of 1
+      When the visitor adds the hammer to the cart
+      Then the visitor should see a confirmation that the hammer was added to the cart
+      And the cart should hold 1 hammer
+
+    Scenario: Visitor adds the selected quantity to the cart
+      Given the hammer is in stock
+      And the visitor has selected a quantity of 3
+      When the visitor adds the hammer to the cart
+      Then the visitor should see a confirmation that the hammer was added to the cart
+      And the cart should hold 3 hammers
+
+    Scenario: Visitor opens a product that is out of stock
+      Given the hammer is out of stock
+      When a visitor opens the hammer's page
+      Then the visitor should be told that the hammer is out of stock
+      And the hammer should not be available to add to the cart
+
+    Question parked: Confirm whether adding a product that is already in the cart increases its quantity or is blocked with the Product Owner or Business Analyst.
+    Question parked: Confirm what the visitor should see when the quantity exceeds the available stock with the Product Owner or Business Analyst.
+    Question parked: Confirm how a rental item is handled on this page, since the out-of-stock rule excludes rental items, with the Product Owner or Business Analyst.
+
+  Rule: A visitor can save a product to their favorites
+
+    Scenario: Logged-in visitor saves a product to their favorites
+      Given a visitor is logged in as Jane Doe
+      And Jane Doe's favorites do not contain the hammer
+      When Jane Doe saves the hammer to her favorites
+      Then the hammer should appear in Jane Doe's favorites
+      And Jane Doe should see a confirmation that the hammer was added to her favorites
+
+    Scenario: Logged-in visitor saves a product that is already in their favorites
+      Given a visitor is logged in as Jane Doe
+      And Jane Doe's favorites already contain the hammer
+      When Jane Doe saves the hammer to her favorites
+      Then Jane Doe's favorites should contain the hammer once
+      And Jane Doe should be told that the hammer is already in her favorites
+
+    Scenario: Visitor who is not logged in saves a product to their favorites
+      Given a visitor is not logged in
+      When the visitor saves the hammer to their favorites
+      Then the visitor should be told that they are not authorised to add a product to their favorites
+
+    Question parked: Confirm whether a product that is already in a user's favorites is shown as saved on its page with the Product Owner or Business Analyst.
+    Question parked: Confirm whether a maximum number of favorites applies with the Product Owner or Business Analyst.
+</acceptance_criteria>
+
+<test_scenarios>
+| ID | Scenario | Type |
+|----|----------|------|
+| TS-01 | Verify the product page shows the product's image, name, description, price, category and brand | Happy |
+| TS-02 | Verify the product page shows the products related to the product | Happy |
+| TS-03 | Verify the system shows a quantity of 1 by default when the page of an in-stock product opens | Happy |
+| TS-04 | Verify a visitor can change the quantity to values within the allowed range | Happy |
+| TS-05 | Verify a visitor can add an in-stock product to the cart in the selected quantity and receives a confirmation | Happy |
+| TS-06 | Verify a logged-in visitor can save a product to their favorites and receives a confirmation | Happy |
+| TS-07 | Verify a visitor can reach a product's page from the catalogue | Happy |
+| TS-08 | Verify a visitor can reach a product's page from a related product | Happy |
+| TS-09 | Verify the system displays a message saying the product could not be found when the page of a product that is not in the catalogue is opened | Negative |
+| TS-10 | Verify the system displays a message saying the product is out of stock and does not allow it to be added to the cart | Negative |
+| TS-11 | Verify a visitor who is not logged in cannot save a product to their favorites | Negative |
+| TS-12 | Verify the system does not allow an empty or non-numeric quantity to be added to the cart | Negative |
+| TS-13 | Verify the system does not display a product and shows an error or not-found message when the product address is malformed | Negative |
+| TS-14 | Verify a quantity below the lower limit is handled at and beyond the boundary | Edge |
+| TS-15 | Verify a quantity above the upper limit is handled at and beyond the boundary | Edge |
+| TS-16 | Verify saving a product that is already in the visitor's favorites does not create a duplicate | Edge |
+| TS-17 | Verify the product page opens correctly when the product has no related products | Edge |
+| TS-18 | Verify the related products do not include the product being viewed | Edge |
+| TS-19 | Verify the product page opens correctly when the product has no image | Edge |
+| TS-20 | Verify the product page shows a product name and description that contain special characters or markup as plain text | Edge |
+| TS-21 | Verify the handling of a decimal quantity, such as 2.5, entered on the product page | Edge |
+| TS-22 | Verify the handling of a quantity entered with leading zeros or in exponent notation | Edge |
+| TS-23 | Verify the quantity when it is changed by one step down from 1 and by one step up from 999999999 | Edge |
+| TS-24 | Verify the selected quantity after the product page is refreshed with a changed quantity | Edge |
+| TS-25 | Verify the quantity added to the cart when a visitor types a quantity and adds the product without leaving the quantity field | Edge |
+| TS-26 | Verify the handling of adding a product to the cart when it went out of stock after the page was opened | Edge |
+| TS-27 | Verify the handling of adding a product to the cart or saving it to favorites when it was removed from the catalogue after the page was opened | Negative |
+| TS-28 | Verify the handling of saving a product to favorites when the visitor's login session ended after the page was opened | Negative |
+| TS-29 | Verify the favorites contain the product once when the save action is triggered twice in quick succession | Edge |
+| TS-30 | Verify the handling of saving an out-of-stock product to the favorites of a logged-in visitor | Edge |
+
+| REQ ID | Description | AC | Scenario IDs |
+|--------|-------------|----|--------------|
+| REQ-01 | Product details displayed | Visitor opens a product's page | TS-01, TS-07, TS-08, TS-19, TS-20 |
+| REQ-02 | Related products displayed | Visitor sees related products | TS-02, TS-08, TS-17, TS-18 |
+| REQ-03 | Product not in catalogue | Visitor opens a product that is not in the catalogue | TS-09, TS-13, TS-27 |
+| REQ-04 | Not-found message wording (open point) | Question parked: not-found message wording | Not covered: question parked |
+| REQ-05 | Quantity starts at 1 | Quantity starts at 1 | TS-03, TS-24 |
+| REQ-06 | Quantity within limits accepted | Quantity within the limits is accepted | TS-04, TS-21, TS-22 |
+| REQ-07 | Quantity below 1 resets to 1 | Quantity below 1 resets to 1 | TS-14, TS-23 |
+| REQ-08 | Quantity above 999,999,999 resets to 999,999,999 | Quantity above 999,999,999 resets to 999,999,999 | TS-15, TS-23 |
+| REQ-09 | Add in-stock product to cart in selected quantity | Visitor adds a product to the cart; Visitor adds the selected quantity to the cart | TS-05, TS-25, TS-26, TS-27 |
+| REQ-10 | Out-of-stock product | Visitor opens a product that is out of stock | TS-10, TS-26 |
+| REQ-11 | Product already in cart (open point) | Question parked: product already in the cart | Not covered: question parked |
+| REQ-12 | Quantity exceeds available stock (open point) | Question parked: quantity exceeds stock | Not covered: question parked |
+| REQ-13 | Rental item handling (open point) | Question parked: rental item | Not covered: question parked |
+| REQ-14 | Logged-in visitor saves to favorites | Logged-in visitor saves a product to their favorites | TS-06, TS-27, TS-28, TS-30 |
+| REQ-15 | Product already in favorites | Logged-in visitor saves a product that is already in their favorites | TS-16, TS-29 |
+| REQ-16 | Visitor not logged in saves to favorites | Visitor who is not logged in saves a product to their favorites | TS-11, TS-28 |
+| REQ-17 | Saved indicator on the page (open point) | Question parked: product shown as saved on its page | Not covered: question parked |
+| REQ-18 | Maximum number of favorites (open point) | Question parked: maximum number of favorites | Not covered: question parked |
+| - | No requirement defines this | - | TS-12 (assumption: no AC defines how an empty or non-numeric quantity is handled; see analysis question G2) |
+</test_scenarios>
+
+<example>
+These rows show the format and the level of detail only. They come from a different feature, a registration form, and their content does not apply to the story above.
+
+| TC ID | Scenario ID | Title | Preconditions | Steps | Test data | Expected result | Postconditions | Remarks |
+|-------|-------------|-------|---------------|-------|-----------|-----------------|----------------|---------|
+| TC-01 | TS-21 | Reject a first name made only of spaces | The registration page is open and no account exists for the email below | 1. Enter the first name. 2. Enter valid values in all other fields. 3. Submit the form. | First name: three spaces. Email: new.user@example.com | The system does not create the account. The system displays a message saying that the first name is not valid. | No account exists for new.user@example.com. | Exact wording of the message to be confirmed. |
+| TC-02 | TS-30 | Accept the upper age limit (3-value BVA, upper boundary: 73) | The registration page is open | 1. Enter the date of birth. 2. Enter valid values in all other fields. 3. Submit the form. | Age on the day: 73 | The system creates the account and the shopper is signed in. | An account exists for the email used. | |
+</example>
+
+<instructions>
+1. Read the user story, the acceptance criteria, the scenarios and the matrix as the tester who has to run these cases.
+2. Write test cases for every scenario, so that every scenario has at least one test case. Put the scenario ID on each case.
+3. Choose the test design technique that fits each scenario and apply it properly. Use equivalence partitioning where inputs fall into groups that behave the same way, with one case per partition. Use boundary value analysis where there are numeric limits, in its 3-value form: the boundary value itself, one value inside it and one outside it, with one case for each value. Use a decision table where the outcome depends on a combination of conditions, for example whether the visitor is logged in, whether the product is in stock and whether it is already saved. Use state transition where the outcome depends on a change of state, for example a session that ends or a product that goes out of stock after the page opened. Use error guessing for malformed, unusual or concurrent input that the requirements do not partition. Use more than one technique for a scenario where that is what it needs, and use none where the scenario is a single plain check. Name the technique and, where relevant, the value or partition in brackets in the title, for example "(3-value BVA, upper boundary: 999999999)" or "(equivalence partition: non-numeric)".
+4. Give every case concrete preconditions, numbered steps, concrete test data and a postcondition. Use the names, amounts and limits from the acceptance criteria. The expected result says what the system displays or does and what is stored as a result, for example what the cart or the favourites list holds afterwards.
+5. Take expected results only from the story, the acceptance criteria and the scenarios. Do not invent message wording. Describe a message by what it conveys and write "Exact wording to be confirmed" in Remarks.
+6. Where the requirements do not define the expected result, write "To be confirmed" in the Expected result column and use Remarks to say what is waiting for confirmation and which question or scenario it relates to. Where common shop behaviour makes the result clear but the requirements do not state it, write it and put "Assumption:" with the reason in Remarks. Leave Remarks empty when there is nothing to note.
+7. Write the way an experienced tester would write for colleagues: plain, professional sentences that read naturally and stay precise. A test case is not an essay, so keep each step and each expected result short and exact, and avoid filler, repeated phrasing and stiff, over-formal wording.
+8. Before the table, say in one or two lines if anything in this request or the scenarios looks wrong or against ISTQB practice. If nothing does, write nothing.
+9. Before finishing, check each case and correct what fails: every scenario is covered, the steps could be followed by someone who has never seen the page, the test data is concrete, the expected result can be observed, the postcondition states what holds afterwards, no limit or behaviour is invented, and nothing is outside the scope, and pending items are in Remarks. Give only the final table, preceded by any note from step 8.
+</instructions>
+
+<constraints>
+- Do not add severity or priority columns. Severity belongs to defects.
+- Do not write test cases for a point the acceptance criteria park.
+- Each step is one action. Write steps for the tester, who may name the quantity field, the add to cart action and the add to favorites action.
+- The number of test cases follows from the scenarios and the techniques. There is no target.
+- Cover all the scenarios in one table. Keep each cell brief so the whole table fits.
+</constraints>
+
+<output_format>
+One table with these columns, one row per test case, in the order of the scenario IDs, with IDs TC-01, TC-02 and so on:
+
+| TC ID | Scenario ID | Title | Preconditions | Steps | Test data | Expected result | Postconditions | Remarks |
+</output_format>

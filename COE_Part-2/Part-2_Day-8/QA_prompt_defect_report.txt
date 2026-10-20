@@ -1,0 +1,64 @@
+<role>
+You are a senior QA analyst, ISTQB CTFL-aligned, writing a defect report that a developer will act on and a Product Owner will prioritise. Write the way an experienced tester writes to peers: precise and short.
+</role>
+
+<context>
+Application: Practice Software Testing (Toolshop).
+Test basis: the acceptance criterion below.
+
+Scenario: Logged-in visitor saves a product to their favorites
+  Given a visitor is logged in as Jane Doe
+  And Jane Doe's favorites do not contain the hammer
+  When Jane Doe saves the hammer to her favorites
+  Then the hammer should appear in Jane Doe's favorites
+  And Jane Doe should see a confirmation that the hammer was added to her favorites
+
+User story: Product Detail (Toolshop user stories v5), https://github.com/testsmith-io/practice-software-testing/blob/main/docs/user-stories/v5.md
+AC11 – Add to Favorites: Given I am logged in, when I click "Add to Favorites", then a success message "Product added to your favorites list." is displayed.
+</context>
+
+<observation>
+I found this myself while testing the product detail page.
+- Reported by: Renuka. Date: 19 October 2026.
+- Test environment: https://with-bugs.practicesoftwaretesting.com in Google Chrome
+- Build version: 1.0.0
+- Logged in as: Jane Doe
+- Product: Hammer, not in Jane Doe's favorites at the time
+- Frequency: every time
+- What happened: on selecting "Add to favourites", the page showed the error "Upsss... something wrong". The product was not added to my favorites. The message does not tell the user what happened or what to do next.
+</observation>
+
+<instructions>
+1. Write one defect report from the observation. Use only the facts above. Do not invent steps, data, build numbers or environment details. Where a field has no source, write "Not provided".
+2. Report fields, in this order, each on its own line:
+   - ID: DEF-001
+   - Title: under 12 words, what happens. No guessed cause, no words like "bug" or "fails".
+   - Feature: Product Detail
+   - User story: Product Detail, with the link from the context
+   - Description: two to three sentences. What happens, the product name, the username used and the frequency. State why it matters to the user.
+   - Reported by
+   - Date reported
+   - Test environment: the URL and the browser name only, no version
+   - Build version
+   - Steps to reproduce: numbered, one action per step, only the actions in the observation
+   - Expected result: the product is added to the user's favorites and a success message "Product added to your favorites list." is displayed
+   - Actual result: exact message text, where it appears, and that the product was not added
+   - Severity: one level from the scale below, with a few words of reasoning
+   - Priority: Medium
+   - Status: New
+   - Impact: one or two short statements of what else could be affected, stated plainly, no questions
+   - Evidence: Not provided
+3. Use only the fields listed above. Do not add any others, such as Precondition. Keep cause out of the description.
+4. Severity scale (an assumption for this exercise; ISTQB defines severity but not its levels):
+   - Critical: main flow blocked, no workaround.
+   - High: main flow fails but a workaround exists, or data is wrong.
+   - Medium: secondary feature fails, or main flow works with a visible fault.
+   - Low: cosmetic or wording only.
+5. Do not change the priority from Medium, propose a fix or describe the defect as resolved.
+</instructions>
+
+<constraints>
+- One defect, one report.
+- Short labelled fields, not paragraphs.
+- Return only the defect report, as a two-column table with the headings Field and Value. Put the steps as a numbered list in the Value cell of Steps to reproduce.
+</constraints>

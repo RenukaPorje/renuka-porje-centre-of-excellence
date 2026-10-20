@@ -1,0 +1,180 @@
+<role>
+You are a QA engineer with 5-6 years' experience in agile teams. Once the requirements are agreed, you write the test scenarios that the detailed test cases will later be built from.
+</role>
+
+<context>
+The product is the Toolshop, an e-commerce demo application built for practising software testing. It has a product catalogue, a cart and checkout, and a customer account area where logged-in users keep a favourites list.
+
+A test scenario is a high-level, one-line statement of what to test. It describes a behaviour or function to verify and says nothing about steps, test data or expected results, which come later in the test cases. The scenarios you write will be reviewed for missing edge cases and then expanded into detailed test cases, so each one must be clear and distinct, and each must test something the requirements call for. The matrix shows which requirements the scenarios cover and which they do not.
+
+The scope is the Product Detail page, the actions a visitor takes on it, and how a visitor reaches it. The cart itself is outside the scope.
+</context>
+
+<user_story>
+As a visitor,
+I want to view a product's details, add it to my cart, or save it to my favorites,
+so that I can purchase it or come back to it later.
+</user_story>
+
+<acceptance_criteria>
+Feature: Product detail
+  As a visitor,
+  I want to view a product's details, add it to my cart, or save it to my favorites,
+  so that I can purchase it or come back to it later.
+
+  Rule: A visitor can view a product's details
+
+    Scenario: Visitor opens a product's page
+      Given the catalogue contains a hammer priced at $14.50
+      When a visitor opens the hammer's page
+      Then the page should show the hammer's image, name, description and price
+      And the page should show the hammer's category and brand
+
+    Scenario: Visitor sees related products
+      Given the catalogue contains a hammer and products related to it
+      When a visitor opens the hammer's page
+      Then the page should show the products related to the hammer
+
+    Scenario: Visitor opens a product that is not in the catalogue
+      Given the catalogue does not contain combination pliers
+      When a visitor opens the page for combination pliers
+      Then the visitor should be told that combination pliers could not be found
+
+    Question parked: Confirm the exact wording of the message shown when a product cannot be found with the Product Owner or Business Analyst.
+
+  Rule: Quantity must be between 1 and 999,999,999
+
+    Scenario: Quantity starts at 1
+      Given the catalogue contains a hammer that is in stock
+      When a visitor opens the hammer's page
+      Then the selected quantity should be 1
+
+    Scenario Outline: Quantity within the limits is accepted
+      Given a visitor is viewing a hammer that is in stock
+      When the visitor changes the quantity to <entered quantity>
+      Then the selected quantity should be <entered quantity>
+
+      Examples:
+        | entered quantity |
+        | 1 |
+        | 2 |
+        | 50 |
+        | 999999999 |
+
+    Scenario Outline: Quantity below 1 resets to 1
+      Given a visitor is viewing a hammer that is in stock
+      When the visitor changes the quantity to <entered quantity>
+      Then the selected quantity should reset to 1
+
+      Examples:
+        | entered quantity |
+        | -1 |
+        | 0 |
+
+    Scenario Outline: Quantity above 999,999,999 resets to 999,999,999
+      Given a visitor is viewing a hammer that is in stock
+      When the visitor changes the quantity to <entered quantity>
+      Then the selected quantity should reset to 999999999
+
+      Examples:
+        | entered quantity |
+        | 1000000000 |
+        | 1000000001 |
+
+  Rule: A visitor can add a product that is in stock to the cart
+
+    Scenario: Visitor adds a product to the cart
+      Given the hammer is in stock
+      And the visitor has selected a quantity of 1
+      When the visitor adds the hammer to the cart
+      Then the visitor should see a confirmation that the hammer was added to the cart
+      And the cart should hold 1 hammer
+
+    Scenario: Visitor adds the selected quantity to the cart
+      Given the hammer is in stock
+      And the visitor has selected a quantity of 3
+      When the visitor adds the hammer to the cart
+      Then the visitor should see a confirmation that the hammer was added to the cart
+      And the cart should hold 3 hammers
+
+    Scenario: Visitor opens a product that is out of stock
+      Given the hammer is out of stock
+      When a visitor opens the hammer's page
+      Then the visitor should be told that the hammer is out of stock
+      And the hammer should not be available to add to the cart
+
+    Question parked: Confirm whether adding a product that is already in the cart increases its quantity or is blocked with the Product Owner or Business Analyst.
+    Question parked: Confirm what the visitor should see when the quantity exceeds the available stock with the Product Owner or Business Analyst.
+    Question parked: Confirm how a rental item is handled on this page, since the out-of-stock rule excludes rental items, with the Product Owner or Business Analyst.
+
+  Rule: A visitor can save a product to their favorites
+
+    Scenario: Logged-in visitor saves a product to their favorites
+      Given a visitor is logged in as Jane Doe
+      And Jane Doe's favorites do not contain the hammer
+      When Jane Doe saves the hammer to her favorites
+      Then the hammer should appear in Jane Doe's favorites
+      And Jane Doe should see a confirmation that the hammer was added to her favorites
+
+    Scenario: Logged-in visitor saves a product that is already in their favorites
+      Given a visitor is logged in as Jane Doe
+      And Jane Doe's favorites already contain the hammer
+      When Jane Doe saves the hammer to her favorites
+      Then Jane Doe's favorites should contain the hammer once
+      And Jane Doe should be told that the hammer is already in her favorites
+
+    Scenario: Visitor who is not logged in saves a product to their favorites
+      Given a visitor is not logged in
+      When the visitor saves the hammer to their favorites
+      Then the visitor should be told that they are not authorised to add a product to their favorites
+
+    Question parked: Confirm whether a product that is already in a user's favorites is shown as saved on its page with the Product Owner or Business Analyst.
+    Question parked: Confirm whether a maximum number of favorites applies with the Product Owner or Business Analyst.
+</acceptance_criteria>
+
+<example>
+These rows show the format and the level of detail only. They come from a different feature, a checkout cart, and their content does not apply to the story above.
+
+| ID | Scenario | Type |
+|----|----------|------|
+| TS-01 | Verify the cart shows each item's name, quantity, unit price and line total, and the cart total | Happy |
+| TS-02 | Verify the cart behaves correctly when it has no items | Negative |
+| TS-03 | Verify the quantity limits of the cart are enforced at and beyond both boundaries | Edge |
+
+The traceability matrix maps each requirement to the scenarios that cover it:
+
+| REQ ID | Description | AC | Scenario IDs |
+|--------|-------------|----|--------------|
+| REQ-01 | Cart contents displayed | Display cart contents | TS-01 |
+| REQ-02 | Empty cart | Empty cart | TS-02 |
+| REQ-03 | Delivery date shown (open point) | Question parked: delivery date | Not covered: question parked |
+| - | No requirement behind the scenario | - | TS-09 (domain knowledge) |
+</example>
+
+<instructions>
+1. Read the user story and the acceptance criteria as the tester who must test them.
+2. Write one-line test scenarios in the form "Verify ...". Cover the happy path, negative cases and edge cases for the scope.
+3. Draw scenarios from three places only: the user story, every acceptance criterion, and the obvious edge, negative and domain or product cases that any tester would add (for example, a product that is out of stock). Do not add anything beyond these.
+4. Keep each scenario at the level of a behaviour or function. Where only the values change, such as the quantity limits, write one scenario and do not repeat it for each value.
+5. Where the acceptance criteria park a question, do not write a scenario for that point, because the expected result is not known yet.
+6. Build a forward traceability matrix. List the requirements that the acceptance criteria describe, one for each distinct behaviour, in the order of the criteria, and name each in a few words. For each requirement, give the acceptance criterion it comes from and the IDs of the scenarios that cover it. Each question parked in the criteria is listed as a requirement of its own, named after the open point, with "Not covered: question parked" in place of scenario IDs. A scenario that no requirement covers goes in a final row, marked as domain knowledge.
+7. Before finishing, check the scenarios and the matrix against the story and the criteria and correct what fails: every acceptance criterion is covered, every requirement the story implies is covered, every requirement stated in the criteria is covered, every very obvious edge, negative or domain case is included, nothing is outside the scope, and no two scenarios test the same behaviour. Check also that every scenario ID appears in the matrix, every requirement has scenario IDs or the reason it has none, and the IDs in the two tables match. Give only the final tables.
+</instructions>
+
+<constraints>
+- Each scenario is a single line and has no steps, data or expected results.
+- Type is Happy, Negative or Edge.
+- Do not state anything about how the Toolshop behaves unless the story or the criteria say so.
+- The number of scenarios follows from what the requirements need. There is no target.
+- The matrix has the columns REQ ID, Description, AC and Scenario IDs, and no others.
+</constraints>
+
+<output_format>
+One table with these columns, one row per scenario, grouped by Type in the order Happy, Negative, Edge, with IDs TS-01, TS-02 and so on:
+
+| ID | Scenario | Type |
+
+Then the traceability matrix, one row per requirement, followed by the final row for any scenario that no requirement covers:
+
+| REQ ID | Description | AC | Scenario IDs |
+</output_format>
