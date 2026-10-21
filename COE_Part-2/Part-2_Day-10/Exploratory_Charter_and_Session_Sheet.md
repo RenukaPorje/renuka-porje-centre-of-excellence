@@ -71,7 +71,7 @@ One line per action: the time, what I tried, what I saw, and a tag. B for a bug 
 
 A short review of the session, written here because I am working alone. It follows PROOF.
 
-|  | Prompt | Entry |
+|  | Guiding questions | notes |
 | --- | --- | --- |
 | Past | What I actually did, in order. | Handoff checks from 4:05 PM: back, refresh and session timeout, and whether they behave the same across all methods. Then the button states and back from the Gift Card confirmation page. Add to cart, about 6 minutes, off charter. Then Cash on Delivery and Credit Card with empty fields. After 4:31 PM, method switching and confirming more than once. The session ran 5 minutes over the 45 planned. |
 | Results | What I found, including defects and what behaved as expected. | Three defects raised: DEF-023 (Unknown error for an empty card number), DEF-024 (add to cart quantity) and DEF-025 (no feedback for an empty card holder name). Five questions logged for the Developer, Product Owner and Business Analyst. Back, refresh and timeout behaved the same across all methods, and the observations are recorded against G13 and G14. Method switching showed the right fields and cleared earlier values, as the criteria say. Confirming more than once showed nothing unexpected. |
