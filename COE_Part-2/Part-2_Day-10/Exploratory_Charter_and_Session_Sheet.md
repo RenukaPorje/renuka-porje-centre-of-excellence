@@ -15,7 +15,7 @@ Part 1 is written before the session. Part 2 is filled in during and after it. T
 | Tester | Renuka |
 | Test environment | Sprint 5<br>https://with-bugs.practicesoftwaretesting.com, Google Chrome.<br>Build version: |
 | Data sources and tools | Test customer account with a cart holding one item. Screenshots for evidence. |
-| Historical information | Open questions with no expected result yet: G13 (refresh and back), G14 (session timeout and logout), Q-19 (chosen method kept on return), Q-22 (confirming more than once).<br>Assumption to check - typed values may remain after a method-switch, although the criteria say the form resets. |
+| Historical information | Open questions with no expected result yet: G13 (refresh and back), G14 (session timeout and logout), Q-19 (chosen method kept on return), Q-22 (confirming more than once). |
 | Constraints and risks | The system must never place an order without a chosen payment method or with details the criteria reject (AC-02, AC-05 and others), and the cart must be empty once an order is placed (AC-34).<br>Payment is simulated, so no real money is involved.<br>Expected results for refresh, back, timeout, and repeated confirmation are not defined, so findings there are recorded as observations and questions. |
 | Test basis | Acceptance criteria file (AC-01 to AC-35), the test scenarios and the Open questions tab. |
 
@@ -32,7 +32,7 @@ Part 1 is written before the session. Part 2 is filled in during and after it. T
 
 ### Test notes
 
-One line per action: the time, what I tried, what I saw, and a tag. B for a bug (the product behaves wrongly), I for an issue (something that blocks or confuses the testing), Q for a question (I cannot tell what is right).
+One line per action: the time, what I tried, what I saw, and a tag. B for a bug (the product behaves wrongly), I for an issue (something that blocks or confuses the testing), Q for a question.
 
 | Time | What I tried | What I saw | Tag |
 | --- | --- | --- | --- |
@@ -83,6 +83,6 @@ A short review of the session, written here because I am working alone. It follo
 
 | No. | Area still to explore |
 | --- | --- |
-| 1 | Add to cart, Email verification |
+| 1 | Add to cart,Order confirmation's Email verification |
 | 2 | Field validations |
 | 3 | Billing and Sign in pages |
