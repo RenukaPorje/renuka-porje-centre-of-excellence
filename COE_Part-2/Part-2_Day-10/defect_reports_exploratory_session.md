@@ -20,7 +20,7 @@
 | Priority | Medium |
 | Status | New |
 | Impact | Other empty or invalid card details may give the same message. Shoppers may abandon the payment. |
-| Evidence | Screenshot. File name: unknown-error-for-card-number.png |
+| Evidence | Screenshot: [unknown-error-for-card-number.png](unknown-error-for-card-number.png)<br>![Unknown error shown next to the Confirm button](unknown-error-for-card-number.png) |
 
 ## DEF-024
 
