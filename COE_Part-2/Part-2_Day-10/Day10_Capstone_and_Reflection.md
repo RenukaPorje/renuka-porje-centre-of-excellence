@@ -60,7 +60,7 @@ Basis: the user story and the final acceptance criteria, in an Agile context. Th
 
 The prompt uses my Day 2 cart test plan prompt as a reference where I learned effective prompting. The AI drafted the plan; I reviewed it and trimmed it where necessary to keep it lightweight. I also had to make certain corrections such as Definition of Ready and Definition of Done, testing approach, scope, etc.
 
-**Test plan:** [checkout_payment_Test_Plan.txt](checkout_payment_Test_Plan.md)
+**Test plan:** [checkout_payment_Test_Plan.md](checkout_payment_Test_Plan.md)
 
 ## Exercise: Design a test case suite applying multiple techniques
 
