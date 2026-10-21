@@ -39,7 +39,7 @@
 | Expected result | The header and Cart review show the same quantity. The criteria do not say whether adding a product already in the cart increases its quantity (parked question). |
 | Actual result | The header shows a quantity of 3 and the success message appears on each click. Cart review shows a quantity of 1. |
 | Severity | High. The quantity is wrong in one of the two places. |
-| Priority | Medium |
+| Priority | High |
 | Status | New |
 | Impact | The shopper may order a different quantity from the one added. The order total may be wrong. |
 | Evidence | Attachment |
