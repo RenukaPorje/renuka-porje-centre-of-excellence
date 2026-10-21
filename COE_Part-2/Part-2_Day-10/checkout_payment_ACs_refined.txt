@@ -1,0 +1,421 @@
+Feature: Checkout Flow - Payment
+  User story: As a customer, I want to provide payment details specific to my chosen payment method,
+    so that my payment is processed correctly.
+
+  Background:
+    Given the shopper has items in the cart
+    And the shopper has completed the Sign in and Billing Address steps
+
+  Rule: A shopper can choose one of the offered payment methods
+
+    Scenario: Payment methods are offered
+      Given the shopper has not chosen a payment method
+      When the shopper reaches the Payment step
+      Then the shopper should be offered the payment methods Bank Transfer, Cash on Delivery, Credit Card, Buy Now Pay Later and Gift Card
+
+    Scenario: Confirming the payment without a payment method
+      Given the shopper has not chosen a payment method
+      When the shopper confirms the payment
+      Then the shopper should be told that a payment method must be chosen
+      And the shopper should not be able to place the order
+
+    Question parked: Confirm whether any payment method is already chosen for the shopper on arrival at the Payment step with the Product Owner or Business Analyst.
+    Question parked: Confirm whether any payment method is offered only for certain order totals or billing countries with the Product Owner or Business Analyst.
+
+  Rule: Bank Transfer needs a bank name, an account name and an account number
+
+    Scenario: Bank Transfer details are requested
+      Given the shopper has not chosen a payment method
+      When the shopper chooses Bank Transfer
+      Then the shopper should be asked for the bank name, account name and account number
+
+    Scenario Outline: A bank name of letters and spaces is accepted
+      Given the shopper has provided every Bank Transfer detail except the bank name
+      When the shopper provides the bank name <bank name>
+      Then the shopper should be able to place the order
+
+      Examples:
+        | bank name       |
+        | Barclays        |
+        | Bank of America |
+
+    Scenario Outline: A bank name with other characters is rejected
+      Given the shopper has provided every Bank Transfer detail except the bank name
+      When the shopper provides the bank name <bank name>
+      Then the shopper should be told that the bank name is not valid
+      And the shopper should not be able to place the order
+
+      Examples:
+        | bank name  |
+        | Bank 2     |
+        | Lloyds-TSB |
+        | Barclays!  |
+
+    Scenario Outline: An account name of letters, digits, spaces, periods, apostrophes and hyphens is accepted
+      Given the shopper has provided every Bank Transfer detail except the account name
+      When the shopper provides the account name <account name>
+      Then the shopper should be able to place the order
+
+      Examples:
+        | account name     |
+        | Jane Smith       |
+        | J. Smith         |
+        | Sean O'Brien     |
+        | Mary-Jane Smith  |
+        | Smith Holdings 2 |
+
+    Scenario Outline: An account name with other characters is rejected
+      Given the shopper has provided every Bank Transfer detail except the account name
+      When the shopper provides the account name <account name>
+      Then the shopper should be told that the account name is not valid
+      And the shopper should not be able to place the order
+
+      Examples:
+        | account name |
+        | Jane@Smith   |
+        | Jane_Smith   |
+        | Smith, Jane  |
+
+    Scenario Outline: An account number of digits only is accepted
+      Given the shopper has provided every Bank Transfer detail except the account number
+      When the shopper provides the account number <account number>
+      Then the shopper should be able to place the order
+
+      Examples:
+        | account number |
+        | 12345678       |
+        | 0012345678     |
+
+    Scenario Outline: An account number with other characters is rejected
+      Given the shopper has provided every Bank Transfer detail except the account number
+      When the shopper provides the account number <account number>
+      Then the shopper should be told that the account number is not valid
+      And the shopper should not be able to place the order
+
+      Examples:
+        | account number |
+        | 1234-5678      |
+        | 1234 5678      |
+        | 12345A78       |
+
+    Scenario Outline: A required Bank Transfer detail is left out
+      Given the shopper has chosen Bank Transfer
+      When the shopper provides every Bank Transfer detail except the <detail>
+      Then the shopper should be told that the missing detail is required
+      And the shopper should not be able to place the order
+
+      Examples:
+        | detail         |
+        | bank name      |
+        | account name   |
+        | account number |
+
+    Question parked: Confirm the minimum and maximum length of the bank name with the Product Owner or Business Analyst.
+    Question parked: Confirm the minimum and maximum length of the account name with the Product Owner or Business Analyst.
+    Question parked: Confirm the minimum and maximum number of digits in the account number with the Product Owner or Business Analyst.
+    Question parked: Confirm whether a bank name or account name made up only of spaces is accepted with the Product Owner or Business Analyst.
+
+  Rule: Credit Card needs a card number, an expiration date, a CVV and a card holder name
+
+    Scenario: Credit Card details are requested
+      Given the shopper has not chosen a payment method
+      When the shopper chooses Credit Card
+      Then the shopper should be asked for the card number, expiration date, CVV and card holder name
+
+    Scenario Outline: A card number of four groups of four digits separated by hyphens is accepted
+      Given the shopper has provided every Credit Card detail except the card number
+      When the shopper provides the card number <card number>
+      Then the shopper should be able to place the order
+
+      Examples:
+        | card number         |
+        | 4111-1111-1111-1111 |
+        | 5555-5555-5555-4444 |
+
+    Scenario Outline: A card number in another form is rejected
+      Given the shopper has provided every Credit Card detail except the card number
+      When the shopper provides the card number <card number>
+      Then the shopper should be told that the card number is not valid
+      And the shopper should not be able to place the order
+
+      Examples:
+        | card number          |
+        | 4111-1111-1111-111   |
+        | 4111-1111-1111-11111 |
+        | 4111111111111111     |
+        | 4111 1111 1111 1111  |
+        | 41111-111-1111-1111  |
+        | 4111-1111-1111-111A  |
+
+    Scenario Outline: An expiration date in another form is rejected
+      Given the shopper has provided every Credit Card detail except the expiration date
+      When the shopper provides the expiration date <expiration date>
+      Then the shopper should be told that the expiration date is not valid
+      And the shopper should not be able to place the order
+
+      Examples:
+        | expiration date |
+        | 13/2027         |
+        | 00/2027         |
+        | 1/2027          |
+        | 01/27           |
+        | 01-2027         |
+
+    Scenario Outline: A CVV of 3 or 4 digits is accepted
+      Given the shopper has provided every Credit Card detail except the CVV
+      When the shopper provides the CVV <CVV>
+      Then the shopper should be able to place the order
+
+      Examples:
+        | CVV  |
+        | 123  |
+        | 1234 |
+
+    Scenario Outline: A CVV of another length or with other characters is rejected
+      Given the shopper has provided every Credit Card detail except the CVV
+      When the shopper provides the CVV <CVV>
+      Then the shopper should be told that the CVV is not valid
+      And the shopper should not be able to place the order
+
+      Examples:
+        | CVV   |
+        | 12    |
+        | 12345 |
+        | 12A   |
+
+    Scenario Outline: A card holder name of letters and spaces is accepted
+      Given the shopper has provided every Credit Card detail except the card holder name
+      When the shopper provides the card holder name <card holder name>
+      Then the shopper should be able to place the order
+
+      Examples:
+        | card holder name |
+        | Jane Smith       |
+        | Anna Maria Lopez |
+
+    Scenario Outline: A card holder name with other characters is rejected
+      Given the shopper has provided every Credit Card detail except the card holder name
+      When the shopper provides the card holder name <card holder name>
+      Then the shopper should be told that the card holder name is not valid
+      And the shopper should not be able to place the order
+
+      Examples:
+        | card holder name |
+        | Jane Smith2      |
+        | Sean O'Brien     |
+        | Mary-Jane Smith  |
+        | J. Smith         |
+
+    Question parked: Confirm which Credit Card details are mandatory with the Product Owner or Business Analyst.
+    Question parked: Confirm whether the card number is checked beyond its form, for example against the card issuer, with the Product Owner or Business Analyst.
+    Question parked: Confirm whether the CVV length depends on the type of card with the Product Owner or Business Analyst.
+    Question parked: Confirm the minimum and maximum length of the card holder name with the Product Owner or Business Analyst.
+
+  Rule: A credit card must have expiry date after the current month
+
+    Scenario Outline: An expiration date after the current month is accepted
+      Given today is 20 October 2026
+      And the shopper has provided every Credit Card detail except the expiration date
+      When the shopper provides the expiration date <expiration date>
+      Then the shopper should be able to place the order
+
+      Examples:
+        | expiration date |
+        | 11/2026         |
+        | 01/2027         |
+
+    Scenario Outline: An expiration date in or before the current month is rejected
+      Given today is 01 November 2026
+      And the shopper has provided every Credit Card detail except the expiration date
+      When the shopper provides the expiration date <expiration date>
+      Then the shopper should be told that the expiration date is not valid
+      And the shopper should not be able to place the order
+
+      Examples:
+        | expiration date |
+        | 10/2026         |
+        | 09/2026         |
+        | 10/2025         |
+
+    Question parked: Confirm the latest expiration date that is accepted with the Product Owner or Business Analyst.
+
+  Rule: Buy Now Pay Later needs a number of monthly instalments
+
+    Scenario: Monthly instalment options are offered
+      Given the shopper has not chosen a payment method
+      When the shopper chooses Buy Now Pay Later
+      Then the shopper should be offered 3, 6, 9 or 12 monthly instalments
+      And the shopper should not be asked for any other payment details
+
+    Scenario Outline: An offered number of monthly instalments is accepted
+      Given the shopper has chosen Buy Now Pay Later
+      When the shopper chooses <instalments> monthly instalments
+      Then the shopper should be able to place the order
+
+      Examples:
+        | instalments |
+        | 3           |
+        | 6           |
+        | 9           |
+        | 12          |
+
+    Scenario: No number of monthly instalments is chosen
+      Given the shopper has chosen Buy Now Pay Later
+      And the shopper has not chosen a number of monthly instalments
+      When the shopper confirms the payment
+      Then the shopper should be told that a number of monthly instalments must be chosen
+      And the shopper should not be able to place the order
+
+    Question parked: Confirm whether the shopper is told the amount of each monthly instalment before placing the order with the Product Owner or Business Analyst.
+    Question parked: Confirm whether Buy Now Pay Later is limited to a minimum or maximum order total with the Product Owner or Business Analyst.
+    Question parked: Confirm whether any interest or fee is added to the order total for Buy Now Pay Later with the Product Owner or Business Analyst.
+
+  Rule: Gift Card needs a gift card number of exactly 16 letters or digits and a validation code of exactly 4 letters or digits
+
+    Scenario: Gift Card details are requested
+      Given the shopper has not chosen a payment method
+      When the shopper chooses Gift Card
+      Then the shopper should be asked for the gift card number and validation code
+
+    Scenario Outline: A gift card number of exactly 16 letters or digits is accepted
+      Given the shopper has provided every Gift Card detail except the gift card number
+      When the shopper provides the gift card number <gift card number>
+      Then the shopper should be able to place the order
+
+      Examples:
+        | gift card number |
+        | ABCD1234EFGH5678 |
+        | 1234567890123456 |
+        | ABCDEFGHIJKLMNOP |
+
+    Scenario Outline: A gift card number in the wrong format is rejected
+      Given the shopper has provided every Gift Card detail except the gift card number
+      When the shopper provides the gift card number <gift card number>
+      Then the shopper should be told that the gift card number is not valid
+      And the shopper should not be able to place the order
+
+      Examples:
+        | gift card number  |
+        | ABCD1234EFGH567   |
+        | ABCD1234EFGH56789 |
+        | ABCD-1234-EFGH-5  |
+        | ABCD1234EFGH567!  |
+        | ABCD 1234EFGH567  |
+
+    Scenario Outline: A validation code of exactly 4 letters or digits is accepted
+      Given the shopper has provided every Gift Card detail except the validation code
+      When the shopper provides the validation code <validation code>
+      Then the shopper should be able to place the order
+
+      Examples:
+        | validation code |
+        | A1B2            |
+        | 1234            |
+
+    Scenario Outline: A validation code in the wrong format is rejected
+      Given the shopper has provided every Gift Card detail except the validation code
+      When the shopper provides the validation code <validation code>
+      Then the shopper should be told that the validation code is not valid
+      And the shopper should not be able to place the order
+
+      Examples:
+        | validation code |
+        | A1B             |
+        | A1B2C           |
+        | A1B!            |
+
+    Scenario Outline: A required Gift Card detail is left out
+      Given the shopper has chosen Gift Card
+      When the shopper provides every Gift Card detail except the <detail>
+      Then the shopper should be told that the missing detail is required
+      And the shopper should not be able to place the order
+
+      Examples:
+        | detail           |
+        | gift card number |
+        | validation code  |
+
+    Question parked: Confirm whether the gift card number and validation code are case-sensitive with the Product Owner or Business Analyst.
+    Question parked: Confirm what happens when the gift card value is less than the order total with the Product Owner or Business Analyst.
+
+  Rule: Cash on Delivery needs no payment details
+
+    Scenario: No details are requested for Cash on Delivery
+      Given the shopper has not chosen a payment method
+      When the shopper chooses Cash on Delivery
+      Then the shopper should not be asked for any payment details
+
+    Question parked: Confirm whether Cash on Delivery is limited to a maximum order total with the Product Owner or Business Analyst.
+
+  Rule: Changing the payment method clears the details provided for the earlier method
+
+    Scenario: Details are gone after changing back to the earlier payment method
+      Given the shopper has chosen Bank Transfer
+      And the shopper has provided the bank name Barclays, account name Jane Smith and account number 12345678
+      And the shopper has changed the payment method to Gift Card
+      When the shopper changes the payment method back to Bank Transfer
+      Then the shopper should have to provide the bank name, account name and account number again
+
+    Question parked: Confirm whether the shopper is warned before the details provided are cleared by a change of payment method with the Product Owner or Business Analyst.
+
+  Rule: Payment details are cleared when the shopper leaves the Payment step
+
+    Scenario: Details are gone when the shopper comes back to the Payment step
+      Given the shopper's cart holds 2 claw hammers priced at $12.50 each
+      And the shopper has provided Credit Card details
+      When the shopper comes back to the Payment step after leaving it
+      Then the shopper should have to provide the payment details again
+      And the cart total should still be $25.00
+
+    Question parked: Confirm whether the chosen payment method is kept when the shopper comes back to the Payment step with the Product Owner or Business Analyst.
+
+  Rule: Confirming the payment with every required detail places the order
+
+    Scenario Outline: The order is placed
+      Given the shopper has chosen <payment method>
+      And the shopper has provided every detail that <payment method> requires
+      When the shopper confirms the payment
+      Then the shopper should be told that the order has been placed
+      And the shopper should be given an invoice number for the order
+
+      Examples:
+        | payment method    |
+        | Bank Transfer     |
+        | Cash on Delivery  |
+        | Credit Card       |
+        | Buy Now Pay Later |
+        | Gift Card         |
+
+    Scenario Outline: The cart is empty after the order is placed
+      Given the shopper has chosen <payment method>
+      And the shopper has provided every detail that <payment method> requires
+      When the shopper confirms the payment
+      Then the shopper's cart should be empty
+
+      Examples:
+        | payment method    |
+        | Bank Transfer     |
+        | Cash on Delivery  |
+        | Credit Card       |
+        | Buy Now Pay Later |
+        | Gift Card         |
+
+    Scenario Outline: A order confirmation email is sent
+      Given the shopper with the email address jane.smith@example.com has chosen <payment method>
+      And the shopper has provided every detail that <payment method> requires
+      When the shopper confirms the payment
+      Then the shopper should receive a checkout confirmation email for the order at jane.smith@example.com
+
+      Examples:
+        | payment method    |
+        | Bank Transfer     |
+        | Cash on Delivery  |
+        | Credit Card       |
+        | Buy Now Pay Later |
+        | Gift Card         |
+
+    Question parked: Confirm the format of the invoice number with the Product Owner or Business Analyst.
+    Question parked: Confirm what the shopper is told when a payment is refused by the bank or card issuer with the Product Owner or Business Analyst.
+    Question parked: Confirm whether confirming the payment more than once places more than one order with the Product Owner or Business Analyst.
+    Question parked: Confirm what the checkout confirmation email must contain, including whether it shows the invoice number, with the Product Owner or Business Analyst.
+    Question parked: Confirm how soon after the order is placed the checkout confirmation email must arrive with the Product Owner or Business Analyst.
