@@ -4,3 +4,16 @@ checkout_payment_Test_Plan.txt
 checkout_payment_test_scenarios.xlsx
 checkout_payment_Test_Cases.xlsx
 checkout_Payment_RTM.xlsx
+
+# Node / TypeScript
+node_modules/
+
+# Scratch test files
+COE_Part-3/Part-3_Day-1/Test.ts
+COE_Part-3/Part-3_Day-1/Test.js
+
+# Playwright
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
