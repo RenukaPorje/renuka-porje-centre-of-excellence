@@ -60,7 +60,7 @@ Basis: the user story and the final acceptance criteria, in an Agile context. Th
 
 The prompt uses my Day 2 cart test plan prompt as a reference where I learned effective prompting. The AI drafted the plan; I reviewed it and trimmed it where necessary to keep it lightweight. I also had to make certain corrections such as Definition of Ready and Definition of Done, testing approach, scope, etc.
 
-**Test plan:** [checkout_payment_Test_Plan.md](checkout_payment_Test_Plan.md)
+**Test plan:** [checkout_payment_Test_Plan.md](assets/checkout_payment_Test_Plan.md)
 
 ## Exercise: Design a test case suite applying multiple techniques
 
@@ -70,7 +70,7 @@ Basis: the user story and the final acceptance criteria, test plan. There is one
 
 The prompt follows my Day 8 scenarios prompt as a reference prompt. On reviewing the AI output, I asked for one happy path per payment method, covering the workflow from selecting the method to placing the order. The scenarios were more like test cases and went in detail rather than being high-level scenarios telling what needs to be tested against functionalities, mapping to user journey. AI also mixed up the concept of acceptance criteria and its anti-patterns, avoiding them in test scenarios as well. These areas were later corrected before accepting.
 
-**Test scenarios:** [checkout_payment_test_scenarios.xlsx](checkout_payment_test_scenarios.xlsx)
+**Test scenarios:** [checkout_payment_test_scenarios.md](assets/checkout_payment_test_scenarios.md)
 
 ### Test cases
 
@@ -78,7 +78,7 @@ Basis: the 33 scenarios, with every case tied to one scenario, 81 cases in all. 
 
 The AI generated the first set of cases as an initial draft. I reviewed them for wrong steps, preconditions, postconditions and test data, and for cases that were not needed, and had them reworked to follow the happy-path scenarios. The test design techniques employed also had to be corrected depending upon the tests and the inputs.
 
-**Test cases:** [checkout_payment_Test_Cases.xlsx](checkout_payment_Test_Cases.xlsx)
+**Test cases:** [checkout_payment_Test_Cases.md](assets/checkout_payment_Test_Cases.md)
 
 ## Exercise: Run a time-boxed exploratory session and log defects
 
@@ -86,9 +86,9 @@ I ran one time-boxed session on the Payment step of checkout. The charter was to
 
 The session ran 50 minutes, with about 88% on the charter and about 6 minutes off charter on add to cart on the product detail page. It produced three defects: DEF-023 (an Unknown error when the card number is left empty), DEF-024 (the add to cart quantity) and DEF-025 (no feedback when the card holder name is left empty). It also raised five questions where the criteria give no expected result. Method switching and confirming more than once showed nothing unexpected.
 
-**Charter and session sheet:** [Exploratory_Charter_and_Session_Sheet.md](Exploratory_Charter_and_Session_Sheet.md)
+**Charter and session sheet:** [Exploratory_Charter_and_Session_Sheet.md](assets/Exploratory_Charter_and_Session_Sheet.md)
 
-**Defect reports:** [defect_reports_exploratory_session.md](defect_reports_exploratory_session.md)
+**Defect reports:** [defect_reports_exploratory_session.md](assets/defect_reports_exploratory_session.md)
 
 ## Exercise: Build an RTM linking requirements to cases
 
@@ -96,7 +96,7 @@ The matrix traces the acceptance criteria to the test cases that cover them, so 
 
 Open questions are not confirmed requirements, so they are on a separate tab with no test cases or status. When one is confirmed, it moves into the matrix.
 
-**RTM file:** [checkout_Payment_RTM.xlsx](checkout_Payment_RTM.xlsx)
+**RTM file:** [checkout_Payment_RTM.md](assets/checkout_Payment_RTM.md)
 
 ## Exercise: Use AI to assist where useful and note where you validated it
 
