@@ -20,7 +20,7 @@ Read on its own, the story says that a customer chooses a payment method, enters
 6. Do the entered details stay if the customer goes back a step, refreshes the page or is locked out?
 7. Are sensitive fields, if any, masked?
 
-The story alone gave too little to work from, so those first questions come from it on its own. From here I take the acceptance criteria that the site publishes for this story as the primary requirements and review them. I note which of my first questions they answer, and the questions that are still open, unclear, or in conflict go into the review log.
+From here I take the acceptance criteria that the site publishes for this story as the primary requirements and review them. I note which of my first questions they answer, and the questions that are still open, unclear, or in conflict go into the review log.
 
 ### Review log
 
@@ -50,7 +50,7 @@ The letter in each ID gives the kind of problem: G for gap and A for ambiguity.
 
 Basis: the user story and the acceptance criteria the site publishes for it, together with the requirements analysis. I have written them in the BDD (Gherkin) format I learned on Day 3. Every question I could not settle is parked at the end of its Rule, to be confirmed with the Product Owner or Business Analyst.
 
-I built the prompt using the acceptance criteria prompt from Day 8 effective prompting task as a reference template, with this story and its published criteria as the requirements. The AI wrote the initial draft of the criteria from it, and I checked the output against the format.
+I built the prompt using the acceptance criteria prompt from Day 8 effective prompting task as a reference template, with this story and its published criteria as the requirements. The AI wrote the initial draft of the criteria from it, and I checked it against the format, requirements and the user story.
 
 **Acceptance criteria:** [checkout_payment_ACs_refined.txt](checkout_payment_ACs_refined.txt)
 
@@ -58,7 +58,7 @@ I built the prompt using the acceptance criteria prompt from Day 8 effective pro
 
 Basis: the user story and the final acceptance criteria, in an Agile context. The plan is lightweight and manual first, with automation kept for regression, and it covers scope, approach, risks and what must be in place to start and finish testing in the sprint.
 
-The prompt uses my Day 2 cart test plan prompt as a reference where I learned effective prompting. The AI drafted the plan; I reviewed it and trimmed it where necessary to keep it lightweight. I also had to make certain corrections such as Definition of Ready and Definition of Done, testing approach, scope, etc.
+The prompt uses my Day 2 cart test plan prompt as a reference template. The AI drafted the initial plan; I reviewed it and trimmed it where necessary to keep it lightweight. I also had to make certain corrections such as Definition of Ready and Definition of Done, testing approach, scope, etc.
 
 **Test plan:** [checkout_payment_Test_Plan.md](assets/checkout_payment_Test_Plan.md)
 
@@ -66,9 +66,13 @@ The prompt uses my Day 2 cart test plan prompt as a reference where I learned ef
 
 ### Test scenarios
 
-Basis: the user story and the final acceptance criteria, test plan. There is one happy-path scenario for each of the five payment methods, from choosing the method to placing the order, with valid values and a check that the fields for that method appear. Field validation is tested in separate scenarios, one run each. Boundary value analysis and equivalence partitioning are kept in separate scenarios so that a failure points to one cause. State transition covers changing the method and leaving the step. No scenario needed a decision table.
+Basis: the user story and the final acceptance criteria, test plan. Field validation is tested in separate scenarios, one run each. Boundary value analysis and equivalence partitioning are kept in separate scenarios so that a failure points to one cause. State transition covers changing the method and leaving the step. No scenario needed a decision table.
 
-The prompt follows my Day 8 scenarios prompt as a reference prompt. On reviewing the AI output, I asked for one happy path per payment method, covering the workflow from selecting the method to placing the order. The scenarios were more like test cases and went in detail rather than being high-level scenarios telling what needs to be tested against functionalities, mapping to user journey. AI also mixed up the concept of acceptance criteria and its anti-patterns, avoiding them in test scenarios as well. These areas were later corrected before accepting.
+The prompt follows my Day 8 scenarios prompt as a reference prompt. On reviewing the AI output. The scenarios were more like test cases and went in detail rather than being high-level scenarios telling what needs to be tested against functionalities, mapping to user journey. 
+
+The output had a different test scenario for each step against one method, covering no end-to-end journey from selecting method to placing an order. I corrected it with one happy-path scenario for each of the five payment methods,with valid values and a check that the fields for that method appear.
+
+AI also mixed up the concept of acceptance criteria and its anti-patterns, avoiding them in test scenarios as well.
 
 **Test scenarios:** [checkout_payment_test_scenarios.md](assets/checkout_payment_test_scenarios.md)
 
@@ -76,7 +80,7 @@ The prompt follows my Day 8 scenarios prompt as a reference prompt. On reviewing
 
 Basis: the 33 scenarios, with every case tied to one scenario, 81 cases in all. The five happy-path cases each run a full order for one payment method, from entering the details to the order placed, the invoice, the empty cart, and the confirmation email. Expiry dates that depend on today are written relative to the current month, and fixed dates such as 01/2027 assume a run in 2026, as the Notes sheet of the file says.
 
-The AI generated the first set of cases as an initial draft. I reviewed them for wrong steps, preconditions, postconditions and test data, and for cases that were not needed, and had them reworked to follow the happy-path scenarios. The test design techniques employed also had to be corrected depending upon the tests and the inputs.
+The AI generated the first set of cases as an initial draft. I reviewed them for wrong steps, preconditions, postconditions and test data, and for cases that were not needed, and had them reworked to follow the happy-path scenarios. The test design techniques employed also had to be corrected depending upon the tests and the input fields.
 
 **Test cases:** [checkout_payment_Test_Cases.md](assets/checkout_payment_Test_Cases.md)
 
@@ -92,11 +96,11 @@ The session ran 50 minutes, with about 88% on the charter and about 6 minutes of
 
 ## Exercise: Build an RTM linking requirements to cases
 
-The matrix traces the acceptance criteria to the test cases that cover them, so the coverage can be read at a glance. Every test case maps at least one requirement. Execution and defect status are filled in as the cases are run.
+The matrix links the acceptance criteria to the test cases that cover them, so the coverage can be read at one glance. Every test case maps at least one requirement. Execution and defect status are filled in as the cases are run.
 
-Open questions are not confirmed requirements, so they are on a separate tab with no test cases or status. When one is confirmed, it moves into the matrix.
+Open questions are not confirmed requirements, so they are separate, with no test cases or status. When one is confirmed, it moves into the matrix.
 
-**RTM file:** [checkout_Payment_RTM.md](assets/checkout_Payment_RTM.md)
+**RTM:** [checkout_Payment_RTM.md](assets/checkout_Payment_RTM.md)
 
 ## Exercise: Use AI to assist where useful and note where you validated it
 
@@ -104,17 +108,17 @@ AI gave me initial drafts for the repetitive work: drafting, organizing notes, s
 
 | Exercise | Where and how AI was used | Usefulness and validation |
 |---|---|---|
-| Analyse requirements and raise clarifying questions | I gave my notes on questions on the user story, had them transcribed, and the AI organized them into the structured list. | It saved organising and formatting, while the questions stayed mine. I checked the list against what I said and had it corrected. |
+| Analyse requirements and raise clarifying questions | I gave my notes on questions on the user story, and the AI organized them into the structured list. | It saved organising and formatting, while the questions stayed mine. I checked the list against what I said, requirements and had it corrected. |
 | Write acceptance criteria and a lightweight test plan: the prompt | The AI wrote the prompt from my Day 8 criteria prompt and what I learned on Day 3 about BDD and Gherkin. | Starting from a template saves time. I validated the prompt through its output. |
-| Write acceptance criteria and a lightweight test plan: the criteria | The AI wrote the criteria from the prompt, with concrete values and boundaries. | It saved writing every scenario by hand. I checked it against what I expected, the user story and requirements. It still introduced anti-patterns, missed a current-month expiry case, and included an instalment number that is not offered. I corrected all three. |
-| Write acceptance criteria and a lightweight test plan: the test plan | The AI drafted the plan from the criteria and the prompt. | It saved the layout and wording. On review I corrected the testing approach, scope and the Definition of Ready and Done to fit this story. |
-| Design a test case suite applying multiple techniques: the test scenarios | The AI wrote the initial scenarios from the prompt and the criteria. | They read like test cases, so I rewrote them as high-level scenarios mapped to a journey or workflow and added the missing ones, so every criterion has one. I checked them against the criteria, user story and domain knowledge, corrected them where applicable |
-| Design a test case suite applying multiple techniques: the test cases | The AI generated the cases with their preconditions, steps, test data, expected results, and postconditions. | Writing 81 cases by hand would have taken far longer. I changed what was needed and checked them against the criteria and requirements, and scenarios before accepting them. This also saved the time that would have required to set up test data. |
-| Run a time-boxed exploratory session and log defects: the charter and session sheet | I brainstormed the template with the AI from the ISTQB syllabus and the Bach material, filled it in myself, and sent it back for a final review. | The review caught a discrepancy in the time split, which I fixed. It also saved the time and effort that goes formatting and structuring. |
-| Run a time-boxed exploratory session and log defects: the defect reports | I gave the AI my existing defect report prompt, the context, the issue, and my view of the severity. It generated a report for each defect in one go. | It saved significant time on documenting and formatting each defect. I checked each report against what I saw and filled the gaps it marked "Not provided". |
-| Build an RTM linking requirements to cases | I gave the AI my reviewed scenarios, test cases and criteria, and it gave an initial draft and mapped the matrix. | It saved a lot of writing time. I reviewed it critically for any inconsistency and missing criteria or cases before accepting it. |
-| Testing approach and decisions | I recorded my notes on approaches and decisions, and gave them to the AI, which structured them into the table. | Noting them as I go saves writing it up at the end. The AI formats the table, and I checked it against my notes. Corrected certain areas heavily where required, treating this as a baseline and initial draft. |
-| All exercises: consistency across the artifacts | I used the AI to check the numbers across the documents, such as test cases, scenarios, and criteria. | It is quicker than checking by eye. I verified each difference against the sources. |
+| Write acceptance criteria and a lightweight test plan: the criteria | The AI wrote the criteria from the prompt, with concrete values and boundaries. | It saved writing every scenario by hand. I checked it against what I expected, the format, anti-patterns, the user story and requirements. It introduced anti-patterns, missed a current-month expiry case, and included an instalment number that is not offered. I corrected all three. |
+| Write acceptance criteria and a lightweight test plan: the test plan | The AI drafted the initial plan. | It saved the layout and wording. On review I corrected the testing approach, scope and the Definition of Ready and Done, deliverables to fit this story. |
+| Design a test case suite applying multiple techniques: the test scenarios | The AI wrote the initial scenarios from the prompt and the criteria. | They read like test cases, had no happy path end-to-end scenarios, with with individual TC for evry step,so I rewrote them as high-level scenarios mapped to a journey or workflow and added the missing ones, so every criterion has one. I checked them against the criteria, user story and domain knowledge, corrected them where applicable |
+| Design a test case suite applying multiple techniques: the test cases | The AI generated the cases with their preconditions, steps, test data, expected results, and postconditions. | Writing 81 cases by hand would have taken far longer. I corrected what was needed and checked them against the criteria and requirements, and scenarios before accepting them. This also saved the time that would have required to set up test data. |
+| Run a time-boxed exploratory session and log defects: the charter and session sheet | Cofirmed the template with the AI from the ISTQB syllabus and the Bach material, filled it in myself, and sent it back for a final review. | The review caught a discrepancy in the time split, which I fixed. It also saved the time and effort that goes formatting and structuring. |
+| Run a time-boxed exploratory session and log defects: the defect reports | I gave the AI my existing defect report prompt, the context, the issue, and my view of the severity. It generated a report for each defect in one go. | It saved significant time on documenting each line in every defect. I checked each report against what I saw and filled the gaps it found. |
+| Build an RTM linking requirements to cases | I gave the AI my reviewed scenarios, test cases and criteria, and it gave an initial draft and mapped the matrix. | It saved a time on writing, and mapping every TC. I reviewed it critically for any inconsistency and missing criteria or cases before accepting it. |
+| Testing approach and decisions | I recorded my notes on approaches and decisions, and gave them to the AI, which structured them into the table. | Noting them as I go saved effort of writing it all at the end. The AI formats the table, and I checked it against my notes. Corrected certain areas heavily where required, treating this as a baseline and initial draft. |
+| All exercises: consistency across the artifacts | I used the AI to check the numbers across the documents, such as test cases, scenarios, and criteria and questions. | It is quicker than checking manually. I verified each difference against the sources. |
 
 ## Testing approach and decisions
 
