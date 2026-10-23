@@ -8,12 +8,14 @@ checkout_Payment_RTM.xlsx
 # Node / TypeScript
 node_modules/
 
-# Scratch test files
-COE_Part-3/Part-3_Day-1/Test.ts
-COE_Part-3/Part-3_Day-1/Test.js
+# Word drafts (only the .md day files are submitted)
+Part-3_Day-1.docx*.docx
+~$*.docx
 
 # Playwright
 test-results/
 playwright-report/
 blob-report/
 playwright/.cache/
+# VS Code personal settings
+.vscode/
