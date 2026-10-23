@@ -1,4 +1,4 @@
-interface LoginCase {
+ export interface LoginCase { // interface is a contract that defines the shape of an object
     title: string;
     email: string;
     password: string;
