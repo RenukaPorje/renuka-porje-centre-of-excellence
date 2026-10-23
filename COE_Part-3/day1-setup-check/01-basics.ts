@@ -15,4 +15,5 @@ age = 26; // This is valid because age is of type number
 
 //Inference
 let city = "Bangalore"; // TypeScript infers the type as string
-//city = 37; // This will give an error because city is of type string
+//city = 37; // This will give an error because city is of type 
+
