@@ -9,7 +9,7 @@ checkout_Payment_RTM.xlsx
 node_modules/
 
 # Word drafts (only the .md day files are submitted)
-Part-3_Day-1.docx*.docx
+Part-3_Day-1.docx
 ~$*.docx
 
 # Playwright
