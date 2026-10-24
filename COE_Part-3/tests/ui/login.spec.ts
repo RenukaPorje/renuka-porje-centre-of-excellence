@@ -30,12 +30,6 @@ test.describe('Login', () => {
     await expect(signInLink).toBeHidden();
   });
 
-  test.fixme('shows an error for a wrong password', async ({ page }) => {
-  });
-
-  test.fixme('shows an error for an unregistered email', async ({ page }) => {
-  });
-
   //Verify that the "Register your account" link opens the registration page and all required fields are visible
   test('TC_12: Register link opens the registration page', async ({ page }) => {
     const registerLink = page.getByRole('link', { name : 'Register your account'});
@@ -60,6 +54,7 @@ test.describe('Login', () => {
     await expect(page.getByLabel('Email address')).toBeVisible();
     await expect(page.getByLabel('Password')).toBeVisible();
 
+    // Verify that the "Register" button is visible and enabled
     const registerButton = page.getByRole('button', { name : 'Register'});
     await expect(registerButton).toBeVisible();
     await expect(registerButton).toBeEnabled();
@@ -129,4 +124,65 @@ test.describe('Login', () => {
     await expect(page).toHaveURL('/auth/login');
   });
 
+  test('TC_06: Login with the email in the wrong format', async ({ page }) => {
+    // Invalid partition: an email with no @ sign. The login form's validator rejects it.
+    const emailWithoutAt = 'abc';
+
+    const loginHeading = page.getByRole('heading', { name : 'Login'});
+    await expect(loginHeading).toBeVisible();
+
+    await page.getByLabel('Email address').fill(emailWithoutAt);
+    await page.getByLabel('Password *', { exact: true }).fill(password);
+    await page.getByRole('button', { name : 'Login'}).click();
+
+    // Positive check first: the format message is on the Email address field, and it proves validation has run.
+    await expect(page.getByLabel('Email address')).toHaveAccessibleDescription('Email format is invalid');
+
+    const passwordError = page.getByText('Password is required');
+    await expect(passwordError).not.toBeVisible();
+
+    await expect(page).toHaveURL('/auth/login');
+  });
+
+  test('TC_07: Login with an unregistered email', async ({ page }) => {
+    // Unique for each run, on example.com (a reserved domain), so no customer can have registered it.
+    const unregisteredEmail = `no.such.user.${Date.now()}@example.com`;
+
+    const loginHeading = page.getByRole('heading', { name : 'Login'});
+    await expect(loginHeading).toBeVisible();
+
+    await page.getByLabel('Email address').fill(unregisteredEmail);
+    await page.getByLabel('Password *', { exact: true }).fill(password);
+    await page.getByRole('button', { name : 'Login'}).click();
+
+    // Positive check first: it waits for the server's response before anything else is checked.
+    await expect(page.getByText('Invalid email or password')).toBeVisible();
+
+    await expect(page).toHaveURL('/auth/login');
+  });
+
+  test('TC_04: Logout ends the session', async ({ page }) => {
+    // Precondition: logged in, on /account
+    await page.getByLabel('Email address').fill(email);
+    await page.getByLabel('Password *', { exact: true }).fill(password);
+    await page.getByRole('button', { name: 'Login' }).click();
+    await expect(page).toHaveURL('/account');
+
+    // Step 1: click on the customer's name in the navigation
+    await page.getByRole('button', { name: fullName, exact: true }).click();
+
+    // Step 2: click on Sign out. It is an <a> without an href, so Playwright gives it no role; scoped to the dropdown the name opens.
+    const accountMenu = page.getByRole('list', { name: fullName });
+    await accountMenu.getByText('Sign out', { exact: true }).click();
+
+    // Expected after step 2: the login page is shown, and the navigation shows Sign in instead of the customer's name
+    await expect(page).toHaveURL('/auth/login');
+    await expect(page.getByRole('heading', { name: 'Login' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Sign in', exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: fullName, exact: true })).toBeHidden();
+
+    // Step 3: open /account. Expected: redirected to /auth/login
+    await page.goto('/account');
+    await expect(page).toHaveURL('/auth/login');
+  });
 });
