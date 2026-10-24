@@ -84,6 +84,49 @@ test.describe('Login', () => {
     await expect(setNewPassword).toBeEnabled();
   });
 
+  //Negative test cases
+  test('TC_10: Login with the password left empty', async ({ page }) => {
+    const loginHeading = page.getByRole('heading', { name : 'Login'});
+    await expect(loginHeading).toBeVisible();
 
+    await page.getByLabel('Email address').fill(email);
+    await page.getByRole('button', { name : 'Login'}).click();
+
+    // The message must be attached to the Password field, so check it on the field itself.
+    // Positive check first: it waits for validation to run before the "not shown" check below.
+    await expect(page.getByLabel('Password *', { exact: true })).toHaveAccessibleDescription('Password is required');
+
+    const emailError = page.getByText('Email is required');
+    await expect(emailError).not.toBeVisible();
+
+    await expect(page).toHaveURL('/auth/login');
+  });
+
+  test('TC_11: Login with the email left empty', async ({ page }) => {
+    const loginHeading = page.getByRole('heading', { name : 'Login'});
+    await expect(loginHeading).toBeVisible();
+
+    await page.getByLabel('Password *', { exact: true }).fill(password);
+    await page.getByRole('button', { name : 'Login'}).click();
+
+    await expect(page.getByLabel('Email address')).toHaveAccessibleDescription('Email is required');
+
+    const passwordError = page.getByText('Password is required');
+    await expect(passwordError).not.toBeVisible();
+
+    await expect(page).toHaveURL('/auth/login');
+  });
+
+  test('TC_05: Login with the email and password left empty', async ({ page }) => {
+    const loginHeading = page.getByRole('heading', { name : 'Login'});
+    await expect(loginHeading).toBeVisible();
+
+    await page.getByRole('button', { name : 'Login'}).click();
+
+    await expect(page.getByLabel('Email address')).toHaveAccessibleDescription('Email is required');
+    await expect(page.getByLabel('Password *', { exact: true })).toHaveAccessibleDescription('Password is required');
+
+    await expect(page).toHaveURL('/auth/login');
+  });
 
 });
