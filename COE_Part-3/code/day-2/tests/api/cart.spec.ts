@@ -100,7 +100,7 @@ test.describe('Cart API', () => {
       expect(body).toHaveProperty('result');
       expect(body.result).toBe('item added or updated');
 
-      // The message alone does not prove the change, so read the cart back.
+      // The message alone does not prove the change, so reading the cart again.
       const cartResponse = await request.get(`/carts/${cartId}`);
       expect(cartResponse.status()).toBe(200);
       const cart = await cartResponse.json();
@@ -138,6 +138,80 @@ test.describe('Cart API', () => {
       // Reading the cart back to prove it no longer exists.
       const cartResponse = await request.get(`/carts/${cartId}`);
       expect(cartResponse.status()).toBe(404);
+    });
+
+  });
+
+  test.describe('Negative', () => {
+    const nonexistentCartId = '00000000-0000-0000-0000-000000000000';
+
+    test('POST /carts/{id} without product_id returns 422', async ({ request }) => {
+      const cartId = await createCart(request);
+      const response = await request.post(`/carts/${cartId}`, {
+        data: {
+          quantity: 1 // Missing product_id
+        }
+      });
+      expect(response.status()).toBe(422);
+
+      // checking that the rejected request has not changed the cart.
+      const cartResponse = await request.get(`/carts/${cartId}`);
+      const cart = await cartResponse.json();
+      expect(cart.cart_items).toHaveLength(0);
+    });
+
+    test('POST /carts/{id} with a non-integer quantity returns 422', async ({ request }) => {
+      const cartId = await createCart(request);
+      const productId = await getProductId(request);
+      const response = await request.post(`/carts/${cartId}`, {
+        data: {
+          product_id: productId,
+          quantity: 'abc' // Invalid quantity
+        }
+      });
+      expect(response.status()).toBe(422);
+
+      // checking that the rejected request has not changed the cart.
+      const cartResponse = await request.get(`/carts/${cartId}`);
+      const cart = await cartResponse.json();
+      expect(cart.cart_items).toHaveLength(0);
+    });
+
+    test('PUT /carts/{id}/product/quantity without quantity returns 422', async ({ request }) => {
+      const cartId = await createCart(request);
+      const productId = await getProductId(request);
+      await addItemToCart(request, cartId, productId, 1);
+
+      const response = await request.put(`/carts/${cartId}/product/quantity`, {
+        data: {
+          product_id: productId // Missing quantity
+        }
+      });
+      expect(response.status()).toBe(422);
+
+      // checking that the rejected request has not changed the quantity.
+      const cartResponse = await request.get(`/carts/${cartId}`);
+      const cart = await cartResponse.json();
+      expect(cart.cart_items).toHaveLength(1);
+      expect(cart.cart_items[0].quantity).toBe(1);
+    });
+
+    test('GET /carts/{id} with a nonexistent id returns 404', async ({ request }) => {
+      const response = await request.get(`/carts/${nonexistentCartId}`);
+      expect(response.status()).toBe(404);
+
+      const body = await response.json();
+      expect(body).toHaveProperty('message');
+      expect(body.message).toContain('Requested item not found');
+    });
+
+    test('DELETE /carts/{id} with a nonexistent id returns 404', async ({ request }) => {
+      const response = await request.delete(`/carts/${nonexistentCartId}`);
+      expect(response.status()).toBe(404);
+
+      const body = await response.json();
+      expect(body).toHaveProperty('message');
+      expect(body.message).toContain('Cart doesnt exist');
     });
 
   });
