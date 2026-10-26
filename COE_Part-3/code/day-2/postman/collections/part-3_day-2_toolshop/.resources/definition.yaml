@@ -1,0 +1,9 @@
+$kind: collection
+variables:
+  cartId: ""
+  productId1: ""
+  quantity: "1"
+  nonexistentCartId: 00000000-0000-0000-0000-000000000000
+  nonexistentProductId: 00000000-0000-0000-0000-000000000001
+  invalidQuantity: abc
+  updateQuantity: "3"

@@ -1,0 +1,21 @@
+$kind: http-request
+method: POST
+url: "{{base_url}}/carts/{{cartId}}"
+order: 7000
+description: "Negative: POST /carts/{id} with quantity but no product_id. Expects 422 Unprocessable Entity because product_id is required."
+headers:
+  Content-Type: application/json
+  Accept: application/json
+body:
+  type: json
+  content: |-
+    {
+       "quantity" :  {{quantity}}
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status is 422 Unprocessable Entity", function () {
+          pm.response.to.have.status(422);
+      });
+    language: text/javascript

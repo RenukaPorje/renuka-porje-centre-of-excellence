@@ -1,0 +1,46 @@
+$kind: http-request
+method: PUT
+url: "{{base_url}}/carts/{{cartId}}/product/quantity"
+order: 4000
+description: Update the quantity of a product in the cart. Sets the quantity to updateQuantity, checks the result message, then fetches the cart to confirm the quantity changed.
+pathVariables:
+  cartId: "{{cartId}}"
+headers:
+  Content-Type: application/json
+  Accept: application/json
+body:
+  type: json
+  content: |-
+    {
+      "product_id": "{{productId1}}",
+      "quantity": {{updateQuantity}}
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status is 200 OK", function () {
+          pm.response.to.have.status(200);
+      });
+      pm.test("Response has result message", function () {
+          const json = pm.response.json();
+          pm.expect(json).to.have.property("result").that.is.a("string").and.not.empty;
+          pm.expect(json.result).to.equal("item added or updated");
+      });
+      pm.sendRequest({
+          url: pm.variables.get("base_url") + "/carts/" + pm.collectionVariables.get("cartId"),
+          method: "GET",
+          header: { Accept: "application/json" }
+      }, function (err, res) {
+          pm.test("Cart now holds the updated quantity", function () {
+              pm.expect(err).to.be.null;
+              const items = res.json().cart_items;
+              pm.expect(items).to.be.an("array").with.lengthOf(1);
+              pm.expect(items[0].product_id).to.equal(pm.collectionVariables.get("productId1"));
+              pm.expect(items[0].quantity).to.equal(Number(pm.collectionVariables.get("updateQuantity")));
+          });
+      });
+      pm.test("Content-Type is application/json", function () {
+          pm.response.to.have.header("Content-Type");
+          pm.expect(pm.response.headers.get("Content-Type")).to.include("application/json");
+      });
+    language: text/javascript

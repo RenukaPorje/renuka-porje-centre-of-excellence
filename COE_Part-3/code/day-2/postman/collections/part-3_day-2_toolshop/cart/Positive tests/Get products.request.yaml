@@ -1,0 +1,30 @@
+$kind: http-request
+name: Get products
+method: GET
+url: '{{base_url}}/products'
+order: 500
+description: 'Setup: GET /products. Stores the first product that is not the Thor Hammer in productId1, so no product id is typed by hand.'
+headers:
+  Accept: application/json
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 200 OK", function () {
+          pm.response.to.have.status(200);
+      });
+      pm.test("Response is paginated and each product has the expected field types", function () {
+          const json = pm.response.json();
+          pm.expect(json).to.have.property("data").that.is.an("array").and.not.empty;
+          pm.expect(json).to.have.property("current_page");
+          pm.expect(json).to.have.property("total");
+          json.data.forEach(p => {
+              pm.expect(p.id).to.be.a("string");
+              pm.expect(p.name).to.be.a("string");
+              pm.expect(p.price).to.be.a("number");
+              pm.expect(p.in_stock).to.be.a("boolean");
+          });
+          const product = json.data.find(p => p.name !== "Thor Hammer");
+          pm.expect(product, "a product other than Thor Hammer").to.exist;
+          pm.collectionVariables.set("productId1", product.id);
+      });

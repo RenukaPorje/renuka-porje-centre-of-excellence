@@ -1,0 +1,17 @@
+$kind: http-request
+method: DELETE
+url: "{{base_url}}/carts/{{cartId}}/product/{{productId1}}"
+order: 5000
+description: Remove a specific product from the cart. Expects 204 No Content with an empty body.
+headers:
+  Accept: application/json
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status is 204 No Content", function () {
+          pm.response.to.have.status(204);
+      });
+      pm.test("Response body is empty", function () {
+          pm.expect(pm.response.text()).to.equal("");
+      });
+    language: text/javascript

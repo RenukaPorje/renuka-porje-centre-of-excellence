@@ -1,0 +1,24 @@
+$kind: http-request
+method: PUT
+url: "{{base_url}}/carts/{{cartId}}/product/quantity"
+order: 10000
+description: "Negative: PUT /carts/{cartId}/product/quantity with product_id but no quantity. Expects 422 Unprocessable Entity because quantity is required."
+pathVariables:
+  cartId: "{{cartId}}"
+headers:
+  Content-Type: application/json
+  Accept: application/json
+body:
+  type: json
+  content: |-
+    {
+      "product_id": "{{productId1}}"
+
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status is 422 Unprocessable Entity", function () {
+          pm.response.to.have.status(422);
+      });
+    language: text/javascript

@@ -1,0 +1,4 @@
+name: toolshop
+values:
+  - key: base_url
+    value: https://api.practicesoftwaretesting.com

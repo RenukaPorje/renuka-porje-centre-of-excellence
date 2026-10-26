@@ -1,0 +1,20 @@
+$kind: http-request
+name: Create cart (setup)
+method: POST
+url: '{{base_url}}/carts'
+order: 6000
+description: 'Setup for the negative tests: creates a fresh cart so they do not depend on the Positive tests having left one behind. Stores the id in cartId.'
+headers:
+  Accept: application/json
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 201 Created", function () {
+          pm.response.to.have.status(201);
+      });
+      pm.test("Response has id field", function () {
+          const json = pm.response.json();
+          pm.expect(json).to.have.property("id").that.is.a("string").and.not.empty;
+          pm.collectionVariables.set("cartId", json.id);
+      });
