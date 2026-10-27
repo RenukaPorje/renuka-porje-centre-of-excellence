@@ -7,10 +7,11 @@ Automated tests for [Practice Software Testing (Toolshop)](https://practicesoftw
 | Day | Topic | Write-up |
 | --- | --- | --- |
 | 1 | TypeScript and Playwright foundations: login suite | [Part-3_Day-1.md](Part-3_Day-1/Part-3_Day-1.md) |
+| 2 | API automation: cart API tests and API-based test setup | [Part-3_Day-2.md](Part-3_Day-2/Part-3_Day-2.md) |
 
 ## What's in this folder
 
-The daily write-ups, with their screenshots and test case files, are in `Part-3_Day-N/` (Day 1 test cases: `Part-3_Day-1/assets/login-test-suite.md`). The code is in `code/`, one complete project per day. Day 1 is in `code/day-1/`.
+The daily write-ups, with their screenshots and test case files, are in `Part-3_Day-N/` (Day 1 test cases: `Part-3_Day-1/assets/login-test-suite.md`). The code is in `code/`, one complete project per day. Day 1 is in `code/day-1/` and Day 2 is in `code/day-2/`.
 
 | Path | What it holds |
 | --- | --- |
@@ -21,10 +22,19 @@ The daily write-ups, with their screenshots and test case files, are in `Part-3_
 | `code/day-1/playwright.config.ts` | Playwright settings (browsers, base URL, reporting, one worker) |
 | `code/day-1/tsconfig.json` | TypeScript compiler settings |
 | `code/day-1/.env.example` | The environment variables the tests need |
+| `code/day-2/tests/api/` | Cart API tests with the `request` fixture, rebuilt from a Postman collection (12 tests: 7 positive, 5 negative) |
+| `code/day-2/tests/ui/` | The login suite, with test data created through the API (TC_02, TC_03, TC_08, TC_09) |
+| `code/day-2/tests/support/` | Setup code: cart helpers and API-based `registerCustomer` and `createFailedAttempt` |
+| `code/day-2/postman/` | The Postman collection and environment that the API tests were rebuilt from |
+| `code/day-2/playwright.config.ts` | Adds an `api` project (base URL from `API_URL`, JSON Accept header); the browser projects only run `tests/ui` |
 
 Generated folders (`node_modules/`, `playwright-report/`, `test-results/`) and `.env` are not committed.
 
 ## How to run
+
+Each day is its own project, so run `npm install` in the day's folder.
+
+Day 1:
 
 ```bash
 cd code/day-1
@@ -37,9 +47,31 @@ npm run report            # open the last HTML report
 npm run typecheck         # check TypeScript without running anything
 ```
 
+Day 2:
+
+```bash
+cd code/day-2
+npm install
+npx playwright install
+cp .env.example .env      # then fill in BASE_URL, API_URL, USER_EMAIL, USER_PASSWORD and USER_FULL_NAME
+npm test                  # run everything: the cart API tests and the login suite on chromium and webkit
+npm run test:api          # run only the cart API tests (no browser)
+npm run test:ui           # run only the login suite in tests/ui
+npm run report            # open the last HTML report
+npm run typecheck         # check TypeScript without running anything
+```
+
+`API_URL` in the Day 2 `.env` is the Toolshop API address, https://api.practicesoftwaretesting.com.
+
 ## Notes on the login tests
 
 - The tests log in with one shared demo customer from the Toolshop docs, set in `.env`. The site locks an account after 3 failed logins and does not unlock it, so if the customer gets locked, switch to another demo customer in `.env`.
 - Tests run on one worker, because failed logins from two browsers at the same time would add up on the shared account.
 - TC_08 and TC_09 register a new customer for each run, so their failed logins never touch the shared account.
 - The tests run on Chromium and WebKit. Firefox is disabled in `playwright.config.ts` because it does not launch locally on macOS due to an unresolved issue, and is to be re-enabled before Day 5.
+
+## Notes on Day 2
+
+- The `api` project runs without a browser, so `npm run test:api` needs no browser install. The chromium and webkit projects only pick up `tests/ui`.
+- The cart tests create a cart for each test and do not delete it.
+- TC_02, TC_03, TC_08 and TC_09 now register their own customer through the API, and TC_02, TC_03 and TC_09 make their failed attempts through it too, so only TC_01 and TC_04 use the shared demo customer.
