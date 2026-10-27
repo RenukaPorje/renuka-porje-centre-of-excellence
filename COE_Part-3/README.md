@@ -54,7 +54,7 @@ cd code/day-2
 npm install
 npx playwright install
 cp .env.example .env      # then fill in BASE_URL, API_URL, USER_EMAIL, USER_PASSWORD and USER_FULL_NAME
-npm test                  # run everything: the cart API tests and the login suite on chromium and webkit
+npm test                  # run everything: the cart API tests and the login suite on chromium, firefox and webkit
 npm run test:api          # run only the cart API tests (no browser)
 npm run test:ui           # run only the login suite in tests/ui
 npm run report            # open the last HTML report
@@ -68,10 +68,10 @@ npm run typecheck         # check TypeScript without running anything
 - The tests log in with one shared demo customer from the Toolshop docs, set in `.env`. The site locks an account after 3 failed logins and does not unlock it, so if the customer gets locked, switch to another demo customer in `.env`.
 - Tests run on one worker, because failed logins from two browsers at the same time would add up on the shared account.
 - TC_08 and TC_09 register a new customer for each run, so their failed logins never touch the shared account.
-- The tests run on Chromium and WebKit. Firefox is disabled in `playwright.config.ts` because it does not launch locally on macOS due to an unresolved issue, and is to be re-enabled before Day 5.
+- The tests run on Chromium, Firefox and WebKit. Firefox first failed to launch on macOS because the system blocked it from its data folder ([Playwright issue](https://github.com/microsoft/playwright/issues/42768)). Adding VS Code to Full Disk Access in System Settings, under Privacy & Security, fixed it.
 
 ## Notes on Day 2
 
-- The `api` project runs without a browser, so `npm run test:api` needs no browser install. The chromium and webkit projects only pick up `tests/ui`.
+- The `api` project runs without a browser, so `npm run test:api` needs no browser install. The chromium, firefox and webkit projects only pick up `tests/ui`.
 - The cart tests create a cart for each test and do not delete it.
 - TC_02, TC_03, TC_08 and TC_09 now register their own customer through the API, and TC_02, TC_03 and TC_09 make their failed attempts through it too, so only TC_01 and TC_04 use the shared demo customer.

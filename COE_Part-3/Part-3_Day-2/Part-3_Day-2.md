@@ -82,7 +82,7 @@ The Fixtures reference lists six:
 
 **Scope:** my Postman collection [`part-3_day-2_toolshop`](../code/day-2/postman/collections/part-3_day-2_toolshop) has 13 requests. I rebuilt it as 12 tests in [`tests/api/cart.spec.ts`](../code/day-2/tests/api/cart.spec.ts), 7 positive and 5 negative, with three setup helpers in [`tests/support/cart-api.ts`](../code/day-2/tests/support/cart-api.ts).
 
-- Config: the api project in [`playwright.config.ts`](../code/day-2/playwright.config.ts) sets the base URL from API_URL and the Accept header for every call. The chromium and webkit projects only pick up `tests/ui`, so API and UI tests never mix.
+- Config: the api project in [`playwright.config.ts`](../code/day-2/playwright.config.ts) sets the base URL from API_URL and the Accept header for every call. The chromium, firefox and webkit projects only pick up `tests/ui`, so API and UI tests never mix.
 - Test data: the cart id comes from POST /carts and the product id from GET /products, both inside helpers, so no id is typed into a test. The only typed values are inputs, such as quantities 1 and 3, the invalid quantity 'abc' and a nonexistent cart id made of zeros.
 - Assertions: status code, content type, the fields in the response with their types, and the exact message "item added or updated". If the API rewords that message the test will break, and I accepted that because it is the documented message.
 - Post-condition checks: after the PUT, both DELETEs and the three 422 cases, the test reads the cart again. A status or a message does not prove the cart changed, and a 422 does not prove it was left alone or didn't cause any changes.
@@ -117,6 +117,10 @@ Issues encountered, and fixes:
 **Result:** 13 passed on chromium in 26.6 seconds.
 
 ![Login suite run on chromium: 13 passed](assets/api-calls-for-test-setup-report.png)
+
+**Result on firefox:** 13 passed in 30.4 seconds.
+
+![Login suite run on firefox: 13 passed](assets/api-calls-login-test-suite-run-firefox.png)
 
 ## Reflection
 

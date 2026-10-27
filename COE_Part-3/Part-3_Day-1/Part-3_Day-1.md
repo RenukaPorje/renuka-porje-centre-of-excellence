@@ -164,11 +164,13 @@ Each action runs only the checks it needs:
 
 The project is a Node project in COE_Part-3/code/day-1 with typescript, @playwright/test, @types/node and dotenv as dev dependencies. TypeScript has its own [`tsconfig.json`](../code/day-1/tsconfig.json) with strict mode on. Playwright was added through its installer, which generated [`playwright.config.ts`](../code/day-1/playwright.config.ts) and a sample test.
 
-The config reads BASE_URL from .env and runs two projects, chromium and webkit. Four npm scripts cover the daily work: test, test:ui, report and typecheck. The sample test was run and the HTML report opened, as shown below.
+The config reads BASE_URL from .env and runs three projects, chromium, firefox and webkit. Four npm scripts cover the daily work: test, test:ui, report and typecheck. The sample test was run and the HTML report opened, as shown below.
 
 ![HTML report: 8 sample and practice tests passed](assets/practice-tests-report-screenshot.png)
 
-**Open issue: Firefox does not launch locally on macOS.** The error is Could not find profile folder. The firefox project is commented out in [`playwright.config.ts`](../code/day-1/playwright.config.ts) with a TODO to re-enable it before the Day 5 CI setup, so the tests currently run on chromium and webkit only. The issue is not resolved.
+**Firefox launch issue (resolved).** Firefox failed to launch locally on macOS with the error Could not find profile folder, so I commented the firefox project out of [`playwright.config.ts`](../code/day-1/playwright.config.ts) for a while. A [Playwright issue](https://github.com/microsoft/playwright/issues/42768) explains the cause: the bundled Firefox shares its data folder with an installed Firefox, which macOS protects, so a terminal or editor launching it is blocked. As the issue suggests, I added VS Code to Full Disk Access in System Settings, under Privacy & Security, and Firefox launched. The sample tests and the login suite now pass on it, 17 in 42.3 seconds.
+
+![Firefox run: 17 passed](assets/login-test-suite-run-firefox.png)
 
 ### Exercise 2: Login suite
 
@@ -201,7 +203,7 @@ cd COE_Part-3/code/day-1
 npx playwright test tests/ui/login.spec.ts
 ```
 
-**Result:** 26 passed in 1.3 minutes on one worker, which is 13 tests on each of the two projects, chromium and webkit.
+**Result:** 26 passed in 1.3 minutes on one worker, which is 13 tests on each of the two projects enabled at the time, chromium and webkit.
 
 ![Login suite run: 26 passed](assets/login-suite-results.png)
 
@@ -222,7 +224,7 @@ Timing is something I never had to think about manually, because a person sees t
 I used Claude in these ways:
 
 - Explaining topics where a resource was hard to follow. I gave the resource as context, asked for examples, and followed up on specific concepts.
-- Troubleshooting during installation and setup. Where that did not resolve the problem, as with Firefox, it is written up as an open issue in Exercise 1.
+- Troubleshooting during installation and setup. The Firefox launch error was not resolved with that help, and I found the cause myself later, as written up in Exercise 1.
 - Reviewing the login test suite test cases and getting help with test data, such as the unregistered email in TC_07.
 - Structuring and formatting this document, and drafting some sections from findings, notes, exercises, and results. Which I then checked against my own understanding, the resources and my notes.
 - Clarifying behaviour while writing the tests: which locator to use, in case the tests couldn't find the locator and timed out, how to show that a second failed attempt reached the server, and why a test failed.

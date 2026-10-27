@@ -39,12 +39,10 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
 
-        // TODO: Firefox fails to launch locally on macOS ("Could not find profile folder").
-    // Re-enable before Day 5 CI setup.
-    // {
-    //   name: 'firefox',
-    //   use: { ...devices['Desktop Firefox'] },
-    // },
+    {
+     name: 'firefox',
+     use: { ...devices['Desktop Firefox'] },
+    },
 
     {
       name: 'webkit',
