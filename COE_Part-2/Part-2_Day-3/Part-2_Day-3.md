@@ -640,7 +640,7 @@ Currently considered only button being disabled.
   Scenario: The Billing Address step loads within the maximum duration
     Given the shopper has completed the Sign in step
     When the shopper proceeds to the Billing Address step
-    Then the Billing Address step should be displayed within 5 ms
+    Then the Billing Address step should be displayed within 2.5 ms
 ```
 
 **AC6b Rewrite**
@@ -660,7 +660,7 @@ Currently considered only button being disabled.
 
 The above example is with placeholder width values.
 
-Question parked: Confirm the measurable conditions for performance, usability and device and browser compatibility.
+Question parked: What should be the target load time for the Billing Address step (2.5 seconds is assumed), the screen widths it must support, and the devices and browsers it applies to, with the Product Owner or Business Analyst.
 
 **AC7**
 
