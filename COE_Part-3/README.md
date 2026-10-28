@@ -8,10 +8,11 @@ Automated tests for [Practice Software Testing (Toolshop)](https://practicesoftw
 | --- | --- | --- |
 | 1 | TypeScript and Playwright foundations: login suite | [Part-3_Day-1.md](Part-3_Day-1/Part-3_Day-1.md) |
 | 2 | API automation: cart API tests and API-based test setup | [Part-3_Day-2.md](Part-3_Day-2/Part-3_Day-2.md) |
+| 3 | Structure and stability: page objects, random order, retries and soft assertions | [Part-3_Day-3.md](Part-3_Day-3/Part-3_Day-3.md) |
 
 ## What's in this folder
 
-The daily write-ups, with their screenshots and test case files, are in `Part-3_Day-N/` (Day 1 test cases: `Part-3_Day-1/assets/login-test-suite.md`). The code is in `code/`, one complete project per day. Day 1 is in `code/day-1/` and Day 2 is in `code/day-2/`.
+The daily write-ups, with their screenshots and test case files, are in `Part-3_Day-N/` (Day 1 test cases: `Part-3_Day-1/assets/login-test-suite.md`). The code is in `code/`, one complete project per day. Day 1 is in `code/day-1/`, Day 2 is in `code/day-2/` and Day 3 is in `code/day-3/`.
 
 | Path | What it holds |
 | --- | --- |
@@ -27,6 +28,10 @@ The daily write-ups, with their screenshots and test case files, are in `Part-3_
 | `code/day-2/tests/support/` | Setup code: cart helpers and API-based `registerCustomer` and `createFailedAttempt` |
 | `code/day-2/postman/` | The Postman collection and environment that the API tests were rebuilt from |
 | `code/day-2/playwright.config.ts` | Adds an `api` project (base URL from `API_URL`, JSON Accept header); the browser projects only run `tests/ui` |
+| `code/day-3/tests/pages/` | The two page objects: `LoginPage` and `AccountPage` |
+| `code/day-3/tests/ui/` | The login suite rewritten with the page objects (`login-refactored.spec.ts`), plus `demo-soft.spec.ts` and `demo-retries.spec.ts` for the soft assertions and retries exercises |
+| `code/day-3/tests/support/` | The same API-based `registerCustomer` and `createFailedAttempt` as Day 2 |
+| `code/day-3/playwright.config.ts` | The Day 2 settings with `fullyParallel` switched on, so that `--shuffle` can reorder the tests inside one file, and `retries` set to 2 |
 
 Generated folders (`node_modules/`, `playwright-report/`, `test-results/`) and `.env` are not committed.
 
@@ -61,7 +66,21 @@ npm run report            # open the last HTML report
 npm run typecheck         # check TypeScript without running anything
 ```
 
-`API_URL` in the Day 2 `.env` is the Toolshop API address, https://api.practicesoftwaretesting.com.
+Day 3:
+
+```bash
+cd code/day-3
+npm install
+npx playwright install
+cp .env.example .env      # then fill in BASE_URL, API_URL, USER_EMAIL, USER_PASSWORD and USER_FULL_NAME
+npm test                  # run everything: the login suite on chromium, firefox and webkit
+npm run test:ui           # run only the tests in tests/ui
+npx playwright test tests/ui/login-refactored.spec.ts --shuffle --retries=0 --reporter=list   # random order, the seed is printed in the first line
+npm run report            # open the last HTML report
+npm run typecheck         # check TypeScript without running anything
+```
+
+`API_URL` in the Day 2 and Day 3 `.env` is the Toolshop API address, https://api.practicesoftwaretesting.com.
 
 ## Notes on the login tests
 
@@ -75,3 +94,10 @@ npm run typecheck         # check TypeScript without running anything
 - The `api` project runs without a browser, so `npm run test:api` needs no browser install. The chromium, firefox and webkit projects only pick up `tests/ui`.
 - The cart tests create a cart for each test and do not delete it.
 - TC_02, TC_03, TC_08 and TC_09 now register their own customer through the API, and TC_02, TC_03 and TC_09 make their failed attempts through it too, so only TC_01 and TC_04 use the shared demo customer.
+
+## Notes on Day 3
+
+- `LoginPage` and `AccountPage` hold the locators and the actions. The assertions stay in the tests.
+- `fullyParallel` is on in this config so that `--shuffle` can reorder the tests inside the file. `workers: 1` is unchanged, so the tests still run one at a time unless `--workers` is passed.
+- Day 3 has no API tests. The `api` project in the config is left over from Day 2.
+- `demo-soft.spec.ts` and `demo-retries.spec.ts` are demos for the soft assertions and retries exercises. The tests that fail on purpose are commented out, and each file explains how to run them again. The config sets `retries: 2`, and the retries exercise also passes `--retries=2` on the command line.
