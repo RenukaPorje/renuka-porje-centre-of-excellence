@@ -14,11 +14,11 @@ dotenv.config({ path: path.resolve(__dirname, '.env') });
 export default defineConfig({
   testDir: './tests',
   /* Run tests in files in parallel */
-  fullyParallel: false,
+  fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
-  /* Retry on CI only */
-  retries: process.env.CI ? 2 : 0,
+  /* Retry failed tests twice */
+  retries: 2,
   // One worker everywhere: the login tests share one demo account, and failed attempts from parallel projects would add up towards the lock.
   workers: 1,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */

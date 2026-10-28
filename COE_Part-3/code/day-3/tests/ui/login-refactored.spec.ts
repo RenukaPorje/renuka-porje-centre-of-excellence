@@ -45,18 +45,14 @@ test.describe('Login', () => {
     await expect(page.getByRole('heading' , { name : 'Customer registration'})).toBeVisible();
 
     // Verifying all required fields are visible
-    await expect(page.getByLabel('First name')).toBeVisible();
-    await expect(page.getByLabel('Last name')).toBeVisible();
-    await expect(page.getByLabel('Date of Birth *')).toBeVisible();
-    await expect(page.getByLabel('City')).toBeVisible();
-    await expect(page.getByLabel('State')).toBeVisible();
-    await expect(page.getByLabel('Postal code')).toBeVisible();
-    await expect(page.getByLabel('House number')).toBeVisible();
-    await expect(page.getByLabel('Street')).toBeVisible();
-    await expect(page.getByLabel('Country')).toBeVisible();
-    await expect(page.getByLabel('Phone')).toBeVisible();
-    await expect(page.getByLabel('Email address')).toBeVisible();
-    await expect(page.getByLabel('Password')).toBeVisible();
+    const requiredFields = [
+      'First name', 'Last name', 'Date of Birth *', 'City', 'State', 'Postal code',
+      'House number', 'Street', 'Country', 'Phone', 'Email address', 'Password',
+    ];
+
+    for (const label of requiredFields) {
+      await expect(page.getByLabel(label)).toBeVisible();
+    }
 
     // Verify that the "Register" button is visible and enabled
     const registerButton = page.getByRole('button', { name : 'Register'});
@@ -82,7 +78,7 @@ test.describe('Login', () => {
   });
 
   //Negative test cases
-  //refactored to use POM
+  
   test('TC_10: Login with the password left empty', async ({ page }) => {
     await expect(loginPage.heading).toBeVisible();
 
@@ -96,11 +92,11 @@ test.describe('Login', () => {
     await expect(page).toHaveURL('/auth/login');
   });
 
-  //refactored to use POM
+  
   test('TC_11: Login with the email left empty', async ({ page }) => {
     await expect(loginPage.heading).toBeVisible();
 
-    await loginPage.passwordField.fill(password);
+    await loginPage.fillPassword(password);
     await loginPage.clickLoginButton();
 
     await expect(loginPage.emailField).toHaveAccessibleDescription('Email is required');
@@ -109,7 +105,7 @@ test.describe('Login', () => {
     await expect(page).toHaveURL('/auth/login');
   });
 
-  //refactored to use POM
+  
   test('TC_05: Login with the email and password left empty', async ({ page }) => {
 
     await expect(loginPage.heading).toBeVisible();
@@ -122,7 +118,7 @@ test.describe('Login', () => {
     await expect(page).toHaveURL('/auth/login');
   });
 
-  //refactored to use POM
+  
   test('TC_06: Login with the email in the wrong format', async ({ page }) => {
     // Invalid partition: an email with no @ sign. The login form's validator rejects it.
     const emailWithoutAt = 'abc';
@@ -139,7 +135,7 @@ test.describe('Login', () => {
     await expect(page).toHaveURL('/auth/login');
   });
 
-  //refactored to use POM
+  
   test('TC_07: Login with an unregistered email', async ({ page }) => {
     // Unique for each run, on example.com (reserved), so no customer can have registered it
     const unregisteredEmail = `no.such.user.${Date.now()}@example.com`;
@@ -171,7 +167,7 @@ test.describe('Login', () => {
     await expect(page).toHaveURL('/auth/login');
   });
 
-  //refactored to use POM
+  
   test('TC_02: Login with valid credentials after 1 failed attempt', async ({ page, request }) => {
     // New customer for each run, so failed attempts do not count against the shared demo account
     const runId = Date.now();
@@ -193,7 +189,7 @@ test.describe('Login', () => {
     await expect(page).toHaveURL('/account');
   });
 
-  //refactored to use POM
+  
   test('TC_03: Login with valid credentials after 2 failed attempts', async ({ page, request }) => {
     // New customer for each run, so failed attempts do not count against the shared demo account
     const runId = Date.now();
@@ -217,7 +213,7 @@ test.describe('Login', () => {
     await expect(page).toHaveURL('/account');
   });
 
-  //refactored to use POM
+  
   test('TC_08: Login with a registered email and a wrong password', async ({ page, request }) => {
     // New customer for each run, so failed attempts do not count against the shared demo account
     const runId = Date.now();
@@ -237,7 +233,7 @@ test.describe('Login', () => {
     await expect(loginPage.accountLockedError).not.toBeVisible();
   });
 
-  //refactored to use POM
+  
   test('TC_09: Account locks after 3 consecutive wrong passwords', async ({ page, request }) => {
     // New customer for each run. The lock is permanent, so it is never reused
     const runId = Date.now();
