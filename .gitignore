@@ -4,6 +4,7 @@ checkout_payment_Test_Plan.txt
 checkout_payment_test_scenarios.xlsx
 checkout_payment_Test_Cases.xlsx
 checkout_Payment_RTM.xlsx
+setup-explanation.md
 
 # Node / TypeScript
 node_modules/
