@@ -10,17 +10,19 @@ import {
   World,
 } from '@cucumber/cucumber';
 import { Browser, BrowserContext, chromium, Page } from '@playwright/test';
+import { CartPage } from '../pages/cart-page';
 
 const BASE_URL = process.env.BASE_URL ?? 'https://practicesoftwaretesting.com';
 
 setDefaultTimeout(30_000);
 
-// One browser for the whole run; each scenario gets a fresh context and page.
+// One browser is started for the whole run, and every scenario gets its own fresh context and page so the scenarios stay independent.
 let browser: Browser;
 
 export class CustomWorld extends World {
   context!: BrowserContext;
   page!: Page;
+  cartPage!: CartPage;
   readonly baseURL = BASE_URL;
   productName = '';
   quantity = 0;
@@ -28,6 +30,12 @@ export class CustomWorld extends World {
 
   constructor(options: IWorldOptions) {
     super(options);
+  }
+
+  // The app looks for the cart id in the session storage, so this gives the browser the cart that was created through the API.
+  async giveBrowserTheCart(cartId: string) {
+    await this.page.goto('/');
+    await this.page.evaluate((id) => sessionStorage.setItem('cart_id', id), cartId);
   }
 }
 
@@ -40,6 +48,7 @@ BeforeAll(async function () {
 Before(async function (this: CustomWorld) {
   this.context = await browser.newContext({ baseURL: this.baseURL });
   this.page = await this.context.newPage();
+  this.cartPage = new CartPage(this.page);
 });
 
 After(async function (this: CustomWorld, { result }) {

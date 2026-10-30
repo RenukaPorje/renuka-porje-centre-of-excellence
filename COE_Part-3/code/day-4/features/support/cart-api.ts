@@ -4,7 +4,7 @@ const API_URL = process.env.API_URL ?? 'https://api.practicesoftwaretesting.com'
 
 export type Product = { id: string; name: string; price: number };
 
-// Creates the API client used for test setup.
+// API client to set up the test data directly, without going through the UI. It needs the Accept header, otherwise validation errors come back as a redirect and not as JSON.
 export async function newApiContext(): Promise<APIRequestContext> {
   return request.newContext({
     baseURL: API_URL,
@@ -12,7 +12,7 @@ export async function newApiContext(): Promise<APIRequestContext> {
   });
 }
 
-// Test setup: finds a product by its name, using the API's search.
+// Finds the product by its name using the API search, so the product id is never hardcoded in the tests (the ids change when the site data is reset).
 export async function findProductByName(api: APIRequestContext, name: string): Promise<Product> {
   const response = await api.get('/products/search', { params: { q: name } });
   const body = await response.json();
@@ -23,7 +23,7 @@ export async function findProductByName(api: APIRequestContext, name: string): P
   return product;
 }
 
-// Test setup: creates an empty cart and returns its id
+// Creates an empty cart through the API and returns its id, which is needed to add the items to it.
 export async function createCart(api: APIRequestContext): Promise<string> {
   const response = await api.post('/carts');
   if (response.status() !== 201) {
@@ -33,7 +33,7 @@ export async function createCart(api: APIRequestContext): Promise<string> {
   return body.id;
 }
 
-// Test setup: adds a product to a cart and checks that the API accepted it
+// Adds the product to that cart through the API. If the API does not accept it, an error is thrown, so the scenario fails at the setup and not later on.
 export async function addItemToCart(
   api: APIRequestContext,
   cartId: string,
