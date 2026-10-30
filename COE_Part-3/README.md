@@ -9,10 +9,11 @@ Automated tests for [Practice Software Testing (Toolshop)](https://practicesoftw
 | 1 | TypeScript and Playwright foundations: login suite | [Part-3_Day-1.md](Part-3_Day-1/Part-3_Day-1.md) |
 | 2 | API automation: cart API tests and API-based test setup | [Part-3_Day-2.md](Part-3_Day-2/Part-3_Day-2.md) |
 | 3 | Structure and stability: page objects, random order, retries and soft assertions | [Part-3_Day-3.md](Part-3_Day-3/Part-3_Day-3.md) |
+| 4 | Gherkin to executable tests: cart review scenarios with Cucumber and Playwright, and a step drafted by BEE | [Part-3_Day-4.md](Part-3_Day-4/Part-3_Day-4.md) |
 
 ## What's in this folder
 
-The daily write-ups, with their screenshots and test case files, are in `Part-3_Day-N/` (Day 1 test cases: `Part-3_Day-1/assets/login-test-suite.md`). The code is in `code/`, one complete project per day. Day 1 is in `code/day-1/`, Day 2 is in `code/day-2/` and Day 3 is in `code/day-3/`.
+The daily write-ups, with their screenshots and test case files, are in `Part-3_Day-N/` (Day 1 test cases: `Part-3_Day-1/assets/login-test-suite.md`). The code is in `code/`, one complete project per day. Day 1 is in `code/day-1/`, Day 2 is in `code/day-2/`, Day 3 is in `code/day-3/` and Day 4 is in `code/day-4/`.
 
 | Path | What it holds |
 | --- | --- |
@@ -32,8 +33,13 @@ The daily write-ups, with their screenshots and test case files, are in `Part-3_
 | `code/day-3/tests/ui/` | The login suite rewritten with the page objects (`login-refactored.spec.ts`), plus `demo-soft.spec.ts` and `demo-retries.spec.ts` for the soft assertions and retries exercises |
 | `code/day-3/tests/support/` | The same API-based `registerCustomer` and `createFailedAttempt` as Day 2 |
 | `code/day-3/playwright.config.ts` | The Day 2 settings with `fullyParallel` switched on, so that `--shuffle` can reorder the tests inside one file, and `retries` set to 2 |
+| `code/day-4/features/cart.feature` | The cart review scenarios in Gherkin (six scenarios, two of them outlines, which run as nine) |
+| `code/day-4/features/steps/` | The step definitions for the scenarios (`cart.steps.ts`) |
+| `code/day-4/features/pages/` | The cart page object (`cart-page.ts`) |
+| `code/day-4/features/support/` | The World, which starts the browser and gives each scenario its own page, and `cart-api.ts`, which sets up each cart through the API |
+| `code/day-4/cucumber.js` | The Cucumber settings: where the features and steps are, loading TypeScript through `tsx`, and the HTML report |
 
-Generated folders (`node_modules/`, `playwright-report/`, `test-results/`) and `.env` are not committed.
+Generated folders (`node_modules/`, `playwright-report/`, `test-results/`, `reports/`) and `.env` are not committed.
 
 ## How to run
 
@@ -80,6 +86,19 @@ npm run report            # open the last HTML report
 npm run typecheck         # check TypeScript without running anything
 ```
 
+Day 4:
+
+```bash
+cd code/day-4
+npm install
+npx playwright install
+npm test                  # run all the scenarios, no .env needed
+npx cucumber-js --name "Empty cart" --format pretty   # run one scenario by name and print its steps
+HEADLESS=false npm test   # run with the browser visible
+npx cucumber-js --dry-run --format usage   # list the step definitions and where they are used, nothing runs
+npx tsc --noEmit -p tsconfig.json          # check TypeScript without running anything
+```
+
 `API_URL` in the Day 2 and Day 3 `.env` is the Toolshop API address, https://api.practicesoftwaretesting.com.
 
 ## Notes on the login tests
@@ -101,3 +120,11 @@ npm run typecheck         # check TypeScript without running anything
 - `fullyParallel` is on in this config so that `--shuffle` can reorder the tests inside the file. `workers: 1` is unchanged, so the tests still run one at a time unless `--workers` is passed.
 - Day 3 has no API tests. The `api` project in the config is left over from Day 2.
 - `demo-soft.spec.ts` and `demo-retries.spec.ts` are demos for the soft assertions and retries exercises. The tests that fail on purpose are commented out, and each file explains how to run them again. The config sets `retries: 2`, and the retries exercise also passes `--retries=2` on the command line.
+
+## Notes on Day 4
+
+- Cucumber is the test runner in this project and Playwright is only used as the browser library, so there is no `playwright.config.ts`. The settings are in `cucumber.js`, and the tests run on Chromium only.
+- Each scenario creates its own cart through the API and hands it to the browser by writing the cart id into `sessionStorage`, which is where the app looks for it. The carts are not deleted.
+- The scenarios use the products Slip Joint Pliers and Bolt Cutters at the prices written in them. The Givens find the products by name through the API, and they stop with a message if a stated price is not the live price. If Toolshop changes a price, the scenarios fail at the Given.
+- The step timeout is set to 30 seconds in `world.ts`, because Cucumber's default of 5 seconds is too short for page loads.
+- `BASE_URL` and `API_URL` default to the Toolshop addresses, so Day 4 needs no `.env`. The HTML report is written to `reports/cucumber.html` on every run and is not committed.
