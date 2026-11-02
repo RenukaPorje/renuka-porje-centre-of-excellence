@@ -52,7 +52,7 @@ Basis: the user story and the acceptance criteria the site publishes for it, tog
 
 I built the prompt using the acceptance criteria prompt from Day 8 effective prompting task as a reference template, with this story and its published criteria as the requirements. The AI wrote the initial draft of the criteria from it, and I checked it against the format, requirements and the user story.
 
-**Acceptance criteria:** [checkout_payment_ACs_refined.txt](checkout_payment_ACs_refined.txt)
+**Acceptance criteria:** [checkout_payment_ACs_refined.txt](assets/checkout_payment_ACs_refined.txt)
 
 ### Lightweight test plan
 
