@@ -1,0 +1,28 @@
+name: Day 5 Playwright tests
+
+on: push
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: COE_Part-3/code/day-5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      - name: Install packages
+        run: npm ci
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      # --trace on records a trace for every test, also the passing ones. It is only for now, to get the evidence, and is switched to failures only later
+      - name: Run Playwright tests
+        run: npx playwright test --trace on
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: COE_Part-3/code/day-5/playwright-report/
+          retention-days: 30
