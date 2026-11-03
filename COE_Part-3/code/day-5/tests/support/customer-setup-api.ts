@@ -1,6 +1,6 @@
 import { APIRequestContext } from '@playwright/test';
 
-const API_URL = process.env.API_URL || 'https://api.practicesoftwaretesting.com';
+const API_URL = 'https://api.practicesoftwaretesting.com';
 
 // Test setup: registers a new customer through the API, so no customer registration through UI is needed
 export async function registerCustomer(
