@@ -62,15 +62,38 @@ test('TS-01 - Happy-path: Payment step offers all five payment methods', async (
 ]);
 });
 
+test('TS-02 - Happy-path: Shopper can place an order with Bank Transfer', async ({ paymentPage }) => {
+  await paymentPage.selectPaymentMethod('bank-transfer');
+  await expect(paymentPage.bankNameField).toBeEmpty();
+  await expect(paymentPage.accountNameField).toBeEmpty();
+  await expect(paymentPage.accountNumberField).toBeEmpty();
+
+  // Fill in bank transfer details, check and confirm payment
+  await paymentPage.fillBankTransferDetails('Bank of America', 'Jane Smith', '0012345678');
+  await paymentPage.confirmPayment();
+
+  // The order confirmation page should show an invoice number and the cart should be empty after the order is placed
+  await expect(paymentPage.orderConfirmation).toContainText(/Your invoice number is \S+/);
+  await paymentPage.page.goto('/checkout');
+  await expect(paymentPage.cartItemTitles).toHaveCount(0);
+});
+
+// Selecting Cash on Delivery should hide any other detail fields (from other methods)
+test('TS-03 - Happy-path: Shopper can place an order with Cash on Delivery', async ({ paymentPage }) => {
+  // Select Cash on Delivery and check that other payment method fields are hidden
+  await paymentPage.selectPaymentMethod('cash-on-delivery');
+  await expect(paymentPage.bankNameField).toBeHidden();
+  await expect(paymentPage.giftCardNumberField).toBeHidden();
+  await expect(paymentPage.monthlyInstallmentsSelect).toBeHidden();
+
+  await paymentPage.confirmPayment();
+
+  await expect(paymentPage.orderConfirmation).toContainText(/Your invoice number is \S+/);
+  await paymentPage.page.goto('/checkout');
+  await expect(paymentPage.cartItemTitles).toHaveCount(0);
+});
+
 /*
-test('TS-02 - Happy-path: Shopper can place an order with Bank Transfer', async ({ page }) => {
-  // Test steps for placing an order with Bank Transfer
-});
-
-test('TS-03 - Happy-path: Shopper can place an order with Cash on Delivery', async ({ page }) => {
-  // Test steps for placing an order with Cash on Delivery
-});
-
 test('TS-04 - Happy-path: Shopper can place an order with Credit Card', async ({ page }) => {
   // Test steps for placing an order with Credit Card
 });

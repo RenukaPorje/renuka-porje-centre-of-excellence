@@ -17,6 +17,9 @@ export class PaymentPage {
   readonly accountNameField: Locator;
   readonly accountNumberField: Locator;
   readonly monthlyInstallmentsSelect: Locator;
+  readonly paymentSuccessMessage: Locator;
+  readonly orderConfirmation: Locator;
+  readonly cartItemTitles: Locator;
 
 /*
 await page.locator('[data-test="country"]').selectOption('US');
@@ -89,6 +92,9 @@ await page.locator('[data-test="country"]').selectOption('US');
     this.accountNameField = page.locator('[data-test="account_name"]');
     this.accountNumberField = page.locator('[data-test="account_number"]');
     this.monthlyInstallmentsSelect = page.locator('[data-test="monthly_installments"]');
+    this.paymentSuccessMessage = page.locator('[data-test="payment-success-message"]');
+    this.orderConfirmation = page.getByText('Thanks for your order!');
+    this.cartItemTitles = page.locator('[data-test="product-title"]');
 
   }
 
@@ -105,6 +111,23 @@ await page.locator('[data-test="country"]').selectOption('US');
     await this.postalCodeField.fill(postalCode);
     await this.houseNumberField.fill(houseNumber);
     await this.billingProceedToCheckoutButton.click();
+  }
+
+  async selectPaymentMethod(method: string) {
+    await this.paymentMethodSelect.selectOption(method);
+  }
+
+  async fillBankTransferDetails(bankName: string, accountName: string, accountNumber: string) {
+    await this.bankNameField.fill(bankName);
+    await this.accountNameField.fill(accountName);
+    await this.accountNumberField.fill(accountNumber);
+  }
+
+  // The first click checks the payment details and shows the success message, then the same button becomes Confirm and places the order
+  async confirmPayment() {
+    await this.checkPaymentButton.click();
+    await this.paymentSuccessMessage.waitFor();
+    await this.confirmButton.click();
   }
 }
 
