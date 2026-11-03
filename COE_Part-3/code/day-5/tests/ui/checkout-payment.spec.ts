@@ -1,59 +1,5 @@
 import { test, expect } from '../support/payment-fixture';
-import { PaymentPage } from '../pages/payment-page';
-
-
-/*
-await page.locator('[data-test="country"]').selectOption('US');
-  await page.locator('[data-test="postal_code"]').click();
-  await page.locator('[data-test="postal_code"]').fill('36547');
-  await page.locator('[data-test="house_number"]').click();
-  await page.locator('[data-test="house_number"]').fill('5765');
-  await page.locator('[data-test="street"]').click();
-  await page.locator('[data-test="proceed-3"]').click();
-  await page.locator('[data-test="payment-method"]').selectOption('bank-transfer');
-  await page.locator('[data-test="bank_name"]').click();
-  await page.locator('[data-test="bank_name"]').fill('5465576587595756');
-  await page.locator('[data-test="account_name"]').click();
-  await page.locator('.alert').click();
-  await page.locator('[data-test="bank_name"]').click();
-  await page.locator('[data-test="bank_name"]').dblclick();
-  await page.locator('[data-test="bank_name"]').fill('BANK A Test');
-  await page.locator('[data-test="account_name"]').click();
-  await page.locator('[data-test="account_name"]').fill('Testing 1');
-  await page.locator('[data-test="account_number"]').click();
-  await page.locator('[data-test="account_number"]').fill('3254857324994239749723194');
-  await page.locator('[data-test="finish"]').click();
-  await page.locator('[data-test="payment-method"]').selectOption('cash-on-delivery');
-  await page.locator('[data-test="payment-method"]').selectOption('buy-now-pay-later');
-  await page.locator('[data-test="monthly_installments"]').selectOption('3');
-  await page.locator('[data-test="monthly_installments"]').selectOption('6');
-  await page.locator('[data-test="monthly_installments"]').selectOption('9');
-  await page.locator('[data-test="monthly_installments"]').selectOption('12');
-  await page.getByText('PaymentPayment MethodChoose').click();
-  await page.locator('[data-test="payment-method"]').selectOption('gift-card');
-  await page.locator('[data-test="gift_card_number"]').click();
-  await page.locator('[data-test="gift_card_number"]').fill('3625627387324782');
-  await page.locator('[data-test="validation_code"]').click();
-  await page.locator('[data-test="validation_code"]').fill('4343');
-  await page.locator('div').filter({ hasText: 'PaymentPayment MethodChoose' }).nth(3).click();
-  await page.locator('[data-test="finish"]').click();
-   await page.locator('[data-test="credit_card_number"]').fill('5466-7238-8234627645');
-  await page.locator('[data-test="credit_card_number"]').click();
-  await page.locator('[data-test="credit_card_number"]').fill('5466-7238-8234-627645');
-  await page.locator('[data-test="credit_card_number"]').click();
-  await page.locator('[data-test="credit_card_number"]').fill('5466-7238-8234-6276');
-  await page.locator('[data-test="expiration_date"]').click();
-  await page.locator('[data-test="expiration_date"]').fill('12/2026');
-  await page.locator('[data-test="cvv"]').click();
-  await page.locator('[data-test="cvv"]').fill('342');
-  await page.locator('[data-test="card_holder_name"]').click();
-  await page.locator('[data-test="card_holder_name"]').fill('TESTing');
-  await page.locator('[data-test="finish"]').click();
-  await page.locator('[data-test="finish"]').click();
-});
-});
-
-*/
+import { cardExpiryDate } from '../support/test-data-helper';
 
 test.describe('Checkout Payment Step', () => {
 test('TS-01 - Happy-path: Payment step offers all five payment methods', async ({ paymentPage }) => {
@@ -96,17 +42,17 @@ test('TS-03 - Happy-path: Shopper can place an order with Cash on Delivery', asy
 test('TS-04 - Happy-path: Shopper can place an order with Credit Card', async ({ paymentPage }) => {
   const cardNumberMessage = 'Enter your 16-digit credit card number as it appears on the card, in the format 0000-0000-0000-0000. Ensure that you include the hyphens for proper formatting.';
   const cvvMessage = "The CVV is a 3-digit or 4-digit number. It's used for added security during card-not-present transactions.";
- await paymentPage.selectPaymentMethod('credit-card');
+  await paymentPage.selectPaymentMethod('credit-card');
   await expect(paymentPage.creditCardNumberField).toBeEmpty();
   await expect(paymentPage.expirationDateField).toBeEmpty();
   await expect(paymentPage.cvvField).toBeEmpty();
-  await expect(paymentPage.cardHolderNameField).toBeEmpty(); 
+  await expect(paymentPage.cardHolderNameField).toBeEmpty();
   await expect(paymentPage.cardNumberHelpText).toHaveText(cardNumberMessage);
   await expect(paymentPage.cvvHelpText).toHaveText(cvvMessage);
 
   // Fill in credit card details, check and confirm payment
   await paymentPage.creditCardNumberField.fill('4111-1111-1111-1111');
-  await paymentPage.expirationDateField.fill('12/2026');
+  await paymentPage.expirationDateField.fill(cardExpiryDate(2));
   await paymentPage.cvvField.fill('567');
   await paymentPage.cardHolderNameField.fill('John Doe');
   await paymentPage.confirmPayment();
@@ -117,21 +63,52 @@ test('TS-04 - Happy-path: Shopper can place an order with Credit Card', async ({
   await expect(paymentPage.cartItemTitles).toHaveCount(0);
 });
 
-/*
-test('TS-05 - Happy-path: Shopper can place an order with Buy Now Pay Later', async ({ page }) => {
-  // Test steps for placing an order with Buy Now Pay Later
+test('TS-05 - Happy-path: Shopper can place an order with Buy Now Pay Later', async ({ paymentPage }) => {
+  await paymentPage.selectPaymentMethod('buy-now-pay-later');
+  await expect(paymentPage.monthlyInstallmentsSelect).toBeVisible();
+  // Select a number of monthly installments, check and confirm payment
+  await paymentPage.monthlyInstallmentsSelect.selectOption('6');
+  await paymentPage.confirmPayment();
+
+  // The order confirmation page should show an invoice number and the cart should be empty after the order is placed
+  await expect(paymentPage.orderConfirmation).toContainText(/Your invoice number is \S+/);
+  await paymentPage.page.goto('/checkout');
+  await expect(paymentPage.cartItemTitles).toHaveCount(0);
 });
 
-test('TS-06 - Happy-path: Shopper can place an order with Gift Card', async ({ page }) => {
-  // Test steps for placing an order with Gift Card
+test('TS-06 - Happy-path: Shopper can place an order with Gift Card', async ({ paymentPage }) => {
+  await paymentPage.selectPaymentMethod('gift-card');
+  await expect(paymentPage.giftCardNumberField).toBeEmpty();
+  await expect(paymentPage.giftCardValidationCodeField).toBeEmpty();
+
+  // Fill in gift card details, check and confirm payment
+  await paymentPage.giftCardNumberField.fill('1234567890123456');
+  await paymentPage.giftCardValidationCodeField.fill('1234');
+  await paymentPage.confirmPayment();
+
+  // The order confirmation page should show an invoice number and the cart should be empty after the order is placed
+  await expect(paymentPage.orderConfirmation).toContainText(/Your invoice number is \S+/);
+  await paymentPage.page.goto('/checkout');
+  await expect(paymentPage.cartItemTitles).toHaveCount(0);
 });
 
-test('TS-07 - Happy-path: Each of the other offered numbers of monthly instalments is accepted', async ({ page }) => {
-  // Test steps
+test.describe('TS-07 - Happy-path: Each of the other offered numbers of monthly instalments is accepted', () => {
+  // 6 monthly instalments are covered in TS-05
 
+  // Test the other offered numbers of monthly instalments: 3, 9 and 12
+  for (const instalments of ['3', '9', '12']) {
+    test(`${instalments} monthly instalments`, async ({ paymentPage }) => {
+      await paymentPage.selectPaymentMethod('buy-now-pay-later');
+      await paymentPage.monthlyInstallmentsSelect.selectOption(instalments);
+      await paymentPage.confirmPayment();
+
+      // The order confirmation page should show an invoice number and the cart should be empty after the order is placed
+      await expect(paymentPage.orderConfirmation).toContainText(/Your invoice number is \S+/);
+      await paymentPage.page.goto('/checkout');
+      await expect(paymentPage.cartItemTitles).toHaveCount(0);
+    });
+  }
 });
-
-*/
 
 });
 
