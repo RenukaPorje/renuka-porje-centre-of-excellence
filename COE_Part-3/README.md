@@ -10,10 +10,11 @@ Automated tests for [Practice Software Testing (Toolshop)](https://practicesoftw
 | 2 | API automation: cart API tests and API-based test setup | [Part-3_Day-2.md](Part-3_Day-2/Part-3_Day-2.md) |
 | 3 | Structure and stability: page objects, random order, retries and soft assertions | [Part-3_Day-3.md](Part-3_Day-3/Part-3_Day-3.md) |
 | 4 | Gherkin to executable tests: cart review scenarios with Cucumber and Playwright, and a step drafted by BEE | [Part-3_Day-4.md](Part-3_Day-4/Part-3_Day-4.md) |
+| 5 | CI reporting and mini-capstone: Playwright in a GitHub Actions pipeline with report and traces, the trace viewer, change failure rate, and the Checkout Payment happy paths automated | [Part-3_Day-5.md](Part-3_Day-5/Part-3_Day-5.md) |
 
 ## What's in this folder
 
-The daily write-ups, with their screenshots and test case files, are in `Part-3_Day-N/` (Day 1 test cases: `Part-3_Day-1/assets/login-test-suite.md`). The code is in `code/`, one complete project per day. Day 1 is in `code/day-1/`, Day 2 is in `code/day-2/`, Day 3 is in `code/day-3/` and Day 4 is in `code/day-4/`.
+The daily write-ups, with their screenshots and test case files, are in `Part-3_Day-N/` (Day 1 test cases: `Part-3_Day-1/assets/login-test-suite.md`). The code is in `code/`, one complete project per day. Day 1 is in `code/day-1/`, Day 2 is in `code/day-2/`, Day 3 is in `code/day-3/`, Day 4 is in `code/day-4/` and Day 5 is in `code/day-5/`. The Day 5 pipeline is in `.github/workflows/playwright-day-5.yml` at the root of the repository.
 
 | Path | What it holds |
 | --- | --- |
@@ -38,6 +39,10 @@ The daily write-ups, with their screenshots and test case files, are in `Part-3_
 | `code/day-4/features/pages/` | The cart page object (`cart-page.ts`) |
 | `code/day-4/features/support/` | The World, which starts the browser and gives each scenario its own page, and `cart-api.ts`, which sets up each cart through the API |
 | `code/day-4/cucumber.js` | The Cucumber settings: where the features and steps are, loading TypeScript through `tsx`, and the HTML report |
+| `code/day-5/tests/ui/` | The Checkout Payment suite (`checkout-payment.spec.ts`): TS-01 to TS-07, 9 tests |
+| `code/day-5/tests/pages/` | The payment page object (`payment-page.ts`) |
+| `code/day-5/tests/support/` | The `paymentPage` fixture, which sets up a customer, login and cart through the API (`customer-setup-api.ts`, `cart-api.ts`) and goes through the checkout to the Payment step, and `test-data-helper.ts` for the card expiry date |
+| `code/day-5/playwright.config.ts` | Chromium only, HTML report with `open: 'never'`, `trace: 'on-first-retry'`, and on CI 2 retries and one worker |
 
 Generated folders (`node_modules/`, `playwright-report/`, `test-results/`, `reports/`) and `.env` are not committed.
 
@@ -99,6 +104,17 @@ npx cucumber-js --dry-run --format usage   # list the step definitions and where
 npx tsc --noEmit -p tsconfig.json          # check TypeScript without running anything
 ```
 
+Day 5:
+
+```bash
+cd code/day-5
+npm ci
+npx playwright install chromium
+npm test                  # run all 9 tests, no .env needed
+npx playwright show-report   # open the last HTML report
+npx tsc --noEmit          # check TypeScript without running anything
+```
+
 `API_URL` in the Day 2 and Day 3 `.env` is the Toolshop API address, https://api.practicesoftwaretesting.com.
 
 ## Notes on the login tests
@@ -128,3 +144,10 @@ npx tsc --noEmit -p tsconfig.json          # check TypeScript without running an
 - The scenarios use the products Slip Joint Pliers and Bolt Cutters at the prices written in them. The Givens find the products by name through the API, and they stop with a message if a stated price is not the live price. If Toolshop changes a price, the scenarios fail at the Given.
 - The step timeout is set to 30 seconds in `world.ts`, because Cucumber's default of 5 seconds is too short for page loads.
 - `BASE_URL` and `API_URL` default to the Toolshop addresses, so Day 4 needs no `.env`. The HTML report is written to `reports/cucumber.html` on every run and is not committed.
+
+## Notes on Day 5
+
+- The pipeline in `.github/workflows/playwright-day-5.yml` runs on every push. It installs the packages and Chromium, runs the suite from `code/day-5`, and uploads the `playwright-report` folder as an artifact, which holds the HTML report and the traces.
+- Traces are recorded with `trace: 'on-first-retry'`, so only a failed test that is retried has one. The first pipeline run used `--trace on` to get a trace from a passing test, and it was removed after that.
+- Each test registers its own customer (a random email), logs in and builds the cart through the API, and only the checkout steps go through the UI.
+- The suite covers the happy paths TS-01 to TS-07 of the Part 2 Day 10 Checkout Payment scenarios. The test scenarios and test cases are in `Part-3_Day-5/assets/`.
