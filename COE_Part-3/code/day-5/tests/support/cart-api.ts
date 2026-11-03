@@ -48,3 +48,11 @@ export async function addItemToCart(
     throw new Error(`POST ${API_URL}/carts/${cartId} returned ${response.status()}, expected 200: ${await response.text()}`);
   }
 }
+
+// Returns the status of GET /carts/{id}. The app deletes the cart when the order is placed, so after an order this is 404.
+export async function getCartStatus(api: APIRequestContext, cartId: string): Promise<number> {
+  const response = await api.get(`${API_URL}/carts/${cartId}`, {
+    headers: { Accept: 'application/json' },
+  });
+  return response.status();
+}
