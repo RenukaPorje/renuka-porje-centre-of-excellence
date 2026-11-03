@@ -1,13 +1,17 @@
 import { test as base } from '@playwright/test';
+import { randomUUID } from 'crypto';
 import { PaymentPage } from '../pages/payment-page';
 import { registerCustomer, loginCustomer } from './customer-setup-api';
 import { findProductByName, createCart, addItemToCart } from './cart-api';
 
-// Every test starts with a new customer who is signed in, has 1 claw hammer in the cart and is on the Payment step
+// Every test starts with a new customer who is signed in, 
+// has 1 claw hammer in the cart and,
+// is on the Payment step
 export const test = base.extend<{ paymentPage: PaymentPage }>({
   paymentPage: async ({ page, request }, use) => {
-    // Test setup through the API: a unique customer, the login and a cart with 1 claw hammer
-    const customerEmail = `payment.${Date.now()}@example.com`;
+    // Test setup through the API: a unique customer, the login and a cart with 1 claw hammer. 
+    // The email has a random id, because tests running in parallel can start in the same millisecond (caused a test failure in the initial test)
+    const customerEmail = `payment.${randomUUID()}@example.com`;
     const customerPassword = 'Welcome01!x';
     await registerCustomer(request, customerEmail, customerPassword);
     const token = await loginCustomer(request, customerEmail, customerPassword);
