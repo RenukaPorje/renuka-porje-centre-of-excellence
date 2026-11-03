@@ -81,8 +81,8 @@ await page.locator('[data-test="country"]').selectOption('US');
     this.billingProceedToCheckoutButton = page.locator('[data-test="proceed-3"]');
     this.signInProceedToCheckoutButton = page.locator('[data-test="proceed-2"]');
     this.paymentMethodSelect = page.locator('[data-test="payment-method"]');
-    this.checkPaymentButton = page.locator('[data-test="finish"]');
-    this.confirmButton = page.locator('[data-test="finish"]');
+    this.checkPaymentButton = page.getByRole('button', { name: 'Check payment' });
+    this.confirmButton = page.getByRole('button', { name: 'Confirm' });
     this.countrySelect = page.locator('[data-test="country"]');
     this.postalCodeField = page.locator('[data-test="postal_code"]');
     this.houseNumberField = page.locator('[data-test="house_number"]');
@@ -93,7 +93,8 @@ await page.locator('[data-test="country"]').selectOption('US');
     this.accountNumberField = page.locator('[data-test="account_number"]');
     this.monthlyInstallmentsSelect = page.locator('[data-test="monthly_installments"]');
     this.paymentSuccessMessage = page.locator('[data-test="payment-success-message"]');
-    this.orderConfirmation = page.getByText('Thanks for your order!');
+    //Actual UI message: Thanks for your order! Your invoice number is INV-2026000011.
+    this.orderConfirmation = page.getByText('Thanks for your order! Your invoice number is INV');
     this.cartItemTitles = page.locator('[data-test="product-title"]');
 
   }
@@ -123,7 +124,7 @@ await page.locator('[data-test="country"]').selectOption('US');
     await this.accountNumberField.fill(accountNumber);
   }
 
-  // The first click checks the payment details and shows the success message, then the same button becomes Confirm and places the order
+  // The first click checks the payment details and shows the success message. The button then changes to Confirm, so it is found by its name, which makes Playwright wait for the change before clicking and placing the order
   async confirmPayment() {
     await this.checkPaymentButton.click();
     await this.paymentSuccessMessage.waitFor();

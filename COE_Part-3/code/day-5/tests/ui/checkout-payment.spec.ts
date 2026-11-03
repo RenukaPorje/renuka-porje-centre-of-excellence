@@ -88,6 +88,7 @@ test('TS-03 - Happy-path: Shopper can place an order with Cash on Delivery', asy
 
   await paymentPage.confirmPayment();
 
+  
   await expect(paymentPage.orderConfirmation).toContainText(/Your invoice number is \S+/);
   await paymentPage.page.goto('/checkout');
   await expect(paymentPage.cartItemTitles).toHaveCount(0);
