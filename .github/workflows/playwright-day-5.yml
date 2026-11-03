@@ -17,9 +17,9 @@ jobs:
         run: npm ci
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
-      # --trace on records a trace for every test, also the passing ones. It is only for now, to get the evidence, and is switched to failures only later
+      # Traces are recorded on the first retry of a failed test, as set in playwright.config.ts. The first run used --trace on, to get a trace from a passing test
       - name: Run Playwright tests
-        run: npx playwright test --trace on
+        run: npx playwright test
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
