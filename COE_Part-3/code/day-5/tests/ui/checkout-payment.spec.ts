@@ -88,17 +88,36 @@ test('TS-03 - Happy-path: Shopper can place an order with Cash on Delivery', asy
 
   await paymentPage.confirmPayment();
 
-  
+  await expect(paymentPage.orderConfirmation).toContainText(/Your invoice number is \S+/);
+  await paymentPage.page.goto('/checkout');
+  await expect(paymentPage.cartItemTitles).toHaveCount(0);
+});
+
+test('TS-04 - Happy-path: Shopper can place an order with Credit Card', async ({ paymentPage }) => {
+  const cardNumberMessage = 'Enter your 16-digit credit card number as it appears on the card, in the format 0000-0000-0000-0000. Ensure that you include the hyphens for proper formatting.';
+  const cvvMessage = "The CVV is a 3-digit or 4-digit number. It's used for added security during card-not-present transactions.";
+ await paymentPage.selectPaymentMethod('credit-card');
+  await expect(paymentPage.creditCardNumberField).toBeEmpty();
+  await expect(paymentPage.expirationDateField).toBeEmpty();
+  await expect(paymentPage.cvvField).toBeEmpty();
+  await expect(paymentPage.cardHolderNameField).toBeEmpty(); 
+  await expect(paymentPage.cardNumberHelpText).toHaveText(cardNumberMessage);
+  await expect(paymentPage.cvvHelpText).toHaveText(cvvMessage);
+
+  // Fill in credit card details, check and confirm payment
+  await paymentPage.creditCardNumberField.fill('4111-1111-1111-1111');
+  await paymentPage.expirationDateField.fill('12/2026');
+  await paymentPage.cvvField.fill('567');
+  await paymentPage.cardHolderNameField.fill('John Doe');
+  await paymentPage.confirmPayment();
+
+  // The order confirmation page should show an invoice number and the cart should be empty after the order is placed
   await expect(paymentPage.orderConfirmation).toContainText(/Your invoice number is \S+/);
   await paymentPage.page.goto('/checkout');
   await expect(paymentPage.cartItemTitles).toHaveCount(0);
 });
 
 /*
-test('TS-04 - Happy-path: Shopper can place an order with Credit Card', async ({ page }) => {
-  // Test steps for placing an order with Credit Card
-});
-
 test('TS-05 - Happy-path: Shopper can place an order with Buy Now Pay Later', async ({ page }) => {
   // Test steps for placing an order with Buy Now Pay Later
 });

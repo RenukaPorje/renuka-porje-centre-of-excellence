@@ -20,7 +20,12 @@ export class PaymentPage {
   readonly paymentSuccessMessage: Locator;
   readonly orderConfirmation: Locator;
   readonly cartItemTitles: Locator;
-
+  readonly creditCardNumberField: Locator;
+  readonly expirationDateField: Locator;
+  readonly cvvField: Locator;
+  readonly cardHolderNameField: Locator;
+  readonly cardNumberHelpText: Locator;
+  readonly cvvHelpText: Locator;
 /*
 await page.locator('[data-test="country"]').selectOption('US');
   await page.locator('[data-test="postal_code"]').click();
@@ -77,25 +82,35 @@ await page.locator('[data-test="country"]').selectOption('US');
 
   constructor(page: Page) {
     this.page = page;
+    // The three Proceed to checkout buttons have the same name, so only their test ids tell the steps apart
     this.cartProceedToCheckoutButton = page.locator('[data-test="proceed-1"]');
     this.billingProceedToCheckoutButton = page.locator('[data-test="proceed-3"]');
     this.signInProceedToCheckoutButton = page.locator('[data-test="proceed-2"]');
-    this.paymentMethodSelect = page.locator('[data-test="payment-method"]');
+    this.paymentMethodSelect = page.getByRole('combobox', { name: 'Payment Method' });
     this.checkPaymentButton = page.getByRole('button', { name: 'Check payment' });
     this.confirmButton = page.getByRole('button', { name: 'Confirm' });
-    this.countrySelect = page.locator('[data-test="country"]');
-    this.postalCodeField = page.locator('[data-test="postal_code"]');
-    this.houseNumberField = page.locator('[data-test="house_number"]');
-    this.giftCardNumberField = page.locator('[data-test="gift_card_number"]');
-    this.giftCardValidationCodeField = page.locator('[data-test="validation_code"]');
-    this.bankNameField = page.locator('[data-test="bank_name"]');
-    this.accountNameField = page.locator('[data-test="account_name"]');
-    this.accountNumberField = page.locator('[data-test="account_number"]');
-    this.monthlyInstallmentsSelect = page.locator('[data-test="monthly_installments"]');
-    this.paymentSuccessMessage = page.locator('[data-test="payment-success-message"]');
+    this.countrySelect = page.getByRole('combobox', { name: 'Your country' });
+    this.postalCodeField = page.getByRole('textbox', { name: 'Your Postcode' });
+    this.houseNumberField = page.getByRole('textbox', { name: 'e.g. 42' });
+    this.giftCardNumberField = page.getByRole('textbox', { name: 'Gift Card Number' });
+    this.giftCardValidationCodeField = page.getByRole('textbox', { name: 'Validation Code' });
+    this.bankNameField = page.getByRole('textbox', { name: 'Bank Name' });
+    this.accountNameField = page.getByRole('textbox', { name: 'Account Name' });
+    this.accountNumberField = page.getByRole('textbox', { name: 'Account Number' });
+    this.monthlyInstallmentsSelect = page.getByRole('combobox', { name: 'Monthly Installments' });
+    this.paymentSuccessMessage = page.getByText('Payment was successful');
     //Actual UI message: Thanks for your order! Your invoice number is INV-2026000011.
     this.orderConfirmation = page.getByText('Thanks for your order! Your invoice number is INV');
     this.cartItemTitles = page.locator('[data-test="product-title"]');
+
+     //Credit cart method
+    this.creditCardNumberField = page.getByRole('textbox', { name: 'Credit Card Number' });
+    this.cardNumberHelpText = page.getByText('Enter your 16-digit credit card number as it appears on the card');
+    this.expirationDateField = page.getByRole('textbox', { name: 'Expiration Date' });
+    this.cvvField = page.getByRole('textbox', { name: 'CVV' });
+    this.cvvHelpText = page.getByText('The CVV is a 3-digit or 4-digit number');
+    this.cardHolderNameField = page.getByRole('textbox', { name: 'Card Holder Name' });
+
 
   }
 
